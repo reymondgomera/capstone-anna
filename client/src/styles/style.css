@@ -1,0 +1,92 @@
+.sidebar {
+   min-height: 100%;
+   position: fixed;
+   top: 0;
+   bottom: 0;
+   z-index: 100;
+
+   background-color: var(--white);
+   transition: 0.4s;
+}
+.sidebar.active {
+   width: 250px;
+}
+.sidebar.inactive {
+   width: 70px;
+}
+.sidebar.inactive span {
+   display: none;
+}
+
+.sidebar-link > div,
+.sidebar-brand {
+   font-size: 1.1rem;
+   text-decoration: none;
+
+   margin: 15px 20px;
+}
+
+.sidebar-link,
+.sidebar-brand {
+   color: var(--black);
+   text-decoration: none;
+}
+.sidebar-link.active-path {
+   color: var(--primary) !important;
+}
+
+.sidebar-link > div.inactive {
+   margin: 15px 0px;
+}
+
+.sidebar-link:focus,
+.sidebar-link:hover,
+.sidebar-brand:hover {
+   color: var(--primary) !important;
+}
+
+/* wave */
+.wave {
+   top: 0;
+   left: 0;
+   width: 100%;
+   overflow: hidden;
+   line-height: 0;
+}
+
+.wave svg {
+   position: relative;
+   display: block;
+   width: calc(100% + 1.3px);
+   height: 140px;
+}
+
+.wave-fill-white {
+   fill: var(--white);
+}
+.wave-fill-primary {
+   fill: var(--primary);
+}
+
+.features {
+   width: 30%;
+}
+
+@media (max-width: 767px) {
+   .features {
+      text-align: center;
+      width: 100%;
+   }
+
+   .features > svg {
+      display: block;
+      margin: auto;
+   }
+
+   .h6 {
+      font-size: 0.8rem !important;
+   }
+   .h5 {
+      font-size: 1rem !important;
+   }
+}
