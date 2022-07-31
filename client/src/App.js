@@ -10,6 +10,20 @@ import AboutPage from './components/pages/AboutPage';
 import Navigation from './components/Navigation';
 
 function App() {
+   useEffect(() => {
+      const fetchdata = async () => {
+         const body = { text: 'hi', userId: '123' };
+         const response = await fetch('/api/df_text_query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+         });
+         const data = await response.json();
+         console.log(data);
+      };
+      fetchdata();
+   }, []);
+
    return (
       <div className='d-flex h-100'>
          <Router>

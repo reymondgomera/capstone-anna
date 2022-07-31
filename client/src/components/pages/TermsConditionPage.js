@@ -19,7 +19,7 @@ const TermsConditionPage = () => {
             </div>
             <div className='mb-4'>
                <h2 className='h5 fw-bold text-primary mb-1'>RESEARCHERS:</h2>
-               <ul class='list-group list-group-flush'>
+               <ul className='list-group list-group-flush'>
                   <li className='list-group-item'>
                      <div>Rey Mond Gomera</div>
                      <div>rgomera_190000000465@uic.edu.ph</div>
