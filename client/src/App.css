@@ -71,6 +71,9 @@ body {
 .text-primary-dark {
    color: var(--primary-dark) !important;
 }
+.text-white {
+   color: var(--white) !important;
+}
 
 /* buttons */
 .btn-primary {

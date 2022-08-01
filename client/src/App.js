@@ -8,22 +8,9 @@ import TermsConditionPage from './components/pages/TermsConditionPage';
 import FeedbackPage from './components/pages/FeedbackPage';
 import AboutPage from './components/pages/AboutPage';
 import Navigation from './components/Navigation';
+import Chatbot from './components/chatbot/Chatbot';
 
 function App() {
-   useEffect(() => {
-      const fetchdata = async () => {
-         const body = { text: 'hi', userId: '123' };
-         const response = await fetch('/api/df_text_query', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-         });
-         const data = await response.json();
-         console.log(data);
-      };
-      fetchdata();
-   }, []);
-
    return (
       <div className='d-flex h-100'>
          <Router>
@@ -34,9 +21,10 @@ function App() {
                   <Route path='/' element={<LandingPage />} />
                   <Route path='/about' element={<AboutPage />} />
                   <Route path='/team' element={<TeamPage />} />
-                  <Route path='/terms-condition' element={<TermsConditionPage />} />
+                  <Route path='/terms-conditions' element={<TermsConditionPage />} />
                   <Route path='/feedback' element={<FeedbackPage />} />
                </Routes>
+               <Chatbot />
             </div>
          </Router>
       </div>

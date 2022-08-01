@@ -29,7 +29,7 @@ const Navigation = () => {
                      <MdGroup className={`icon-medium ${active ? 'me-3 active' : 'inactive'}`} /> <span>The Team</span>
                   </div>
                </NavLink>
-               <NavLink to='/terms-condition' className={({ isActive }) => (isActive ? 'sidebar-link active-path' : 'sidebar-link')}>
+               <NavLink to='/terms-conditions' className={({ isActive }) => (isActive ? 'sidebar-link active-path' : 'sidebar-link')}>
                   <div className={`d-flex align-items-center ${active ? 'active' : 'justify-content-center inactive'}`}>
                      <MdArticle className={`icon-medium ${active ? 'me-3 active' : 'inactive'}`} /> <span>Terms</span>
                      <span className='mx-1' style={{ fontFamily: 'sans-serif' }}>
