@@ -5,6 +5,8 @@
    position: fixed;
    bottom: 14%;
    right: 1%;
+
+   z-index: 999;
 }
 
 .chatbot-avatar {
@@ -26,7 +28,7 @@
 
 .chatbot-header {
    padding: 10px 15px;
-   border-radius: 12px 12px 0 0;
+   border-radius: 10px 10px 0 0;
 }
 .chatbot-messages {
    width: 100%;
@@ -36,6 +38,7 @@
    -ms-overflow-style: none; /* for Internet Explorer, Edge */
    scrollbar-width: none; /* for Firefox */
    overflow-y: scroll;
+   scroll-behavior: smooth;
 }
 .chatbot-messages::-webkit-scrollbar {
    display: none; /* for Chrome, Safari, and Opera */
@@ -47,6 +50,7 @@
    padding: 12px;
    background-color: var(--white);
    border-top: solid 2px #f1f1f1;
+   border-radius: 0 0 10px 10px;
 }
 .chatbot-text-input > input {
    width: 100%;
@@ -65,7 +69,7 @@
 /* message */
 .message {
    display: flex;
-   align-items: end;
+   align-items: flex-end;
    padding: 7px 18px;
 }
 .message.user {
@@ -93,4 +97,59 @@
 .message-text-link:active,
 .message-text-link:focus {
    box-shadow: none !important;
+}
+
+/* card */
+.message-cards {
+   overflow: hidden;
+   padding: 7px 18px;
+   display: flex;
+   align-items: flex-end;
+}
+
+.message-cards > .cards {
+   overflow: auto;
+   padding-bottom: 10px;
+}
+
+.message-cards > .cards .card-container:last-child {
+   padding-right: 0;
+}
+
+.card {
+   border: none !important;
+}
+.card-container {
+   float: left;
+   padding-right: 20px;
+   width: 270px;
+}
+.card-body {
+   display: flex !important;
+   flex-direction: column !important;
+   align-items: center !important;
+   justify-content: center !important;
+   padding: 0 !important;
+   background-color: var(--grey) !important;
+   border-radius: 10px !important;
+}
+.card-video {
+   width: 200px;
+   height: 150px;
+}
+.card-title {
+   padding: 10px 8px !important;
+   margin: 0 !important;
+   text-align: center !important;
+   font-size: 0.9rem !important;
+}
+
+.message-quick-replies {
+   display: flex;
+   flex-wrap: wrap;
+   padding: 0px 15px 8px 70px;
+}
+
+.message-quick-reply-btn {
+   font-size: 0.9rem;
 }

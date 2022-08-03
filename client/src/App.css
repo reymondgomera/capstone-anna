@@ -23,6 +23,7 @@
 html {
    height: 100%;
    scrollbar-width: thin;
+   scroll-behavior: smooth;
 }
 
 body {
@@ -102,6 +103,34 @@ body {
 }
 .btn-black:focus {
    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 50%) !important;
+}
+
+.btn-link {
+   border: none !important;
+   background-color: transparent !important;
+   color: var(--primary) !important;
+}
+.btn-link:hover {
+   border: none !important;
+   background-color: transparent !important;
+   color: var(--primary-dark) !important;
+}
+.btn-primary:focus {
+   box-shadow: none !important;
+}
+
+/*  btn outline */
+.btn-outline-primary {
+   border: solid 2px var(--primary) !important;
+   background-color: transparent !important;
+   color: var(--primary) !important;
+}
+.btn-outline-primary:hover {
+   background-color: var(--primary) !important;
+   color: var(--white) !important;
+}
+.btn-outline-primary:focus {
+   box-shadow: 0 0 0 0.25rem rgba(231, 178, 43, 50%) !important;
 }
 
 /* form-control */

@@ -1,6 +1,5 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 import LandingPage from './components/pages/LandingPage';
 import TeamPage from './components/pages/TeamPage';

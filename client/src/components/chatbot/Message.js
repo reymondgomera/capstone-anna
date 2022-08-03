@@ -1,5 +1,5 @@
 import '../../styles/chatbot.css';
-import chathead from '../../assets/Anna_Chat_Avatar.svg';
+import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
 
 const Message = ({ keyword, speaks, text }) => {
    return (
@@ -7,7 +7,7 @@ const Message = ({ keyword, speaks, text }) => {
          <div className={`message ${speaks !== 'bot' && 'user'}`}>
             {speaks === 'bot' && (
                <div>
-                  <img className='chatbot-avatar message-avatar' src={chathead} alt='chathead' />
+                  <img className='chatbot-avatar message-avatar' src={chatbotAvatar} alt='chathead' />
                </div>
             )}
             <div className={`message-text ${speaks === 'bot' ? 'bot' : 'user'}`}>
