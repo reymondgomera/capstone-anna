@@ -87,6 +87,9 @@
 .message-text.bot {
    background-color: var(--grey);
 }
+.message-loading {
+   width: 35px;
+}
 .message-text.user {
    color: var(--white);
    background-color: var(--primary);

@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { v4 as uuid } from 'uuid';
 import Cookies from 'universal-cookie';
+import { ChatbotContext } from '../../context/ChatbotContext';
+import { MdClose, MdSend } from 'react-icons/md';
 
 import Message from './Message';
 import Card from './Card';
 import chathead from '../../assets/Anna_Chathead.svg';
+import chatloading from '../../assets/chatbot-loading.gif';
 import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
-import '../../styles/chatbot.css';
-import { MdClose, MdSend } from 'react-icons/md';
 import Modal from '../Modal';
-import { ChatbotContext } from '../../context/ChatbotContext';
 import QuickReplies from './QuickReplies';
+
+import '../../styles/chatbot.css';
 
 const cookies = new Cookies();
 
@@ -27,9 +29,8 @@ const Chatbot = () => {
       },
    ]);
    const [textMessage, setTextMessage] = useState('');
-   const [isAgreeTermsConditions, setIsAgreeTermsConditions] = useState(false);
-   const [showBot, setShowbot] = useState(true);
-   const [disabledInput, setDisabledInput] = useState(false);
+   const { isAgreeTermsConditions, setIsAgreeTermsConditions, showBot, setShowbot, disabledInput, botChatLoading, setBotChatLoading } =
+      useContext(ChatbotContext);
    const messagesRef = useRef(null);
 
    // if cookies does not exist set cookies else do nothing, cookies path = '/ - accessible to all pages
@@ -46,6 +47,7 @@ const Chatbot = () => {
       };
 
       setMessages(prev => [...prev, userSays]);
+      setBotChatLoading(true);
 
       const body = { text, userId: cookies.get('userId') };
       const response = await fetch('/api/df_text_query', {
@@ -54,6 +56,7 @@ const Chatbot = () => {
          body: JSON.stringify(body),
       });
       const data = await response.json();
+      setBotChatLoading(false);
 
       data.fulfillmentMessages.forEach(async msg => {
          const botSays = {
@@ -65,6 +68,8 @@ const Chatbot = () => {
    };
 
    const df_event_query = async event => {
+      setBotChatLoading(true);
+
       const body = { event, userId: cookies.get('userId') };
       const response = await fetch('/api/df_event_query', {
          method: 'POST',
@@ -72,6 +77,7 @@ const Chatbot = () => {
          body: JSON.stringify(body),
       });
       const data = await response.json();
+      setBotChatLoading(false);
 
       data.fulfillmentMessages.forEach(async msg => {
          const botSays = {
@@ -163,6 +169,7 @@ const Chatbot = () => {
    };
 
    const handleTermsConditionAgree = () => {
+      resolveAfterXSeconds(1);
       df_event_query('Welcome');
       setIsAgreeTermsConditions(true);
    };
@@ -181,7 +188,7 @@ const Chatbot = () => {
    }, []);
 
    return (
-      <ChatbotContext.Provider value={{ setDisabledInput }}>
+      <>
          {showBot ? (
             <div className='chatbot'>
                {/* chatbot header */}
@@ -196,6 +203,17 @@ const Chatbot = () => {
                <div ref={messagesRef} className='chatbot-messages'>
                   {renderMessages(messages)}
                   {/* <div ref={messageEnd}></div> */}
+
+                  {botChatLoading && (
+                     <div className='message bot'>
+                        <div>
+                           <img className='chatbot-avatar message-avatar' src={chatbotAvatar} alt='chathead' />
+                        </div>
+                        <div className='message-text bot'>
+                           <img className='message-loading' src={chatloading} alt='loading' />
+                        </div>
+                     </div>
+                  )}
                </div>
                {/* text-input */}
                <form className='chatbot-text-input' onSubmit={send}>
@@ -278,7 +296,7 @@ const Chatbot = () => {
                </button>
             </div>
          </Modal>
-      </ChatbotContext.Provider>
+      </>
    );
 };
 

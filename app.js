@@ -11,5 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 require('./routes/dialogflowRoutes')(app); // (app) added at the end, to allow app to be accessible in dialogflowRoutes
+require('./routes/fullfillmentRoutes')(app);
 
 app.listen(PORT, () => console.log(`Server is running at ${PORT}`));

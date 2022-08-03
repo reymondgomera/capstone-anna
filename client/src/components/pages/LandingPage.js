@@ -3,8 +3,11 @@ import { FaScroll } from 'react-icons/fa';
 import { MdRecommend } from 'react-icons/md';
 
 import Anna from '../../assets/Anna_1.svg';
+import { useContext } from 'react';
+import { ChatbotContext } from '../../context/ChatbotContext';
 
 const LandingPage = () => {
+   const { setShowbot } = useContext(ChatbotContext);
    return (
       <>
          <div className='container d-flex flex-column flex-lg-row align-items-center justify-content-between mt-5 px-3'>
@@ -18,7 +21,9 @@ const LandingPage = () => {
                   Anna aid senior high school students awareness and recommend various degree programs for college. Are you ready to know what is the
                   recommended degree programs for you?
                </p>
-               <button className='btn btn-primary btn-lg rounded-pill mb-5 mb-lg-0'>Get Started</button>
+               <button className='btn btn-primary btn-lg rounded-pill mb-5 mb-lg-0' onClick={() => setShowbot(true)}>
+                  Get Started
+               </button>
             </div>
             <div className='order-0 order-lg-1 mb-5 mb-lg-0'>
                <img src={Anna} alt='Anna' className='anna-img' />
