@@ -1,23 +1,39 @@
-import { HiLightBulb } from 'react-icons/hi';
+import React, { useContext } from 'react';
+
+import Header from '../Header';
+import anna from '../../assets/Anna_1.svg';
+import brainstrom from '../../assets/brainstorm.svg';
+import reymond from '../../assets/Reymond.svg';
+import ryan from '../../assets/Ryan.svg';
+import john from '../../assets/John.svg';
 import { FaScroll } from 'react-icons/fa';
 import { MdRecommend } from 'react-icons/md';
-
-import Anna from '../../assets/Anna_1.svg';
-import { useContext } from 'react';
 import { ChatbotContext } from '../../context/ChatbotContext';
 
 const LandingPage = () => {
    const { setShowbot } = useContext(ChatbotContext);
+   const navlinks = [
+      { text: 'Home', link: '/#home' },
+      { text: 'About', link: '/#about' },
+      { text: 'The Team', link: '/#team' },
+      { text: 'Terms & Conditions', link: '/#terms-conditions' },
+      { text: 'Feedback', link: '/#feedback' },
+   ];
+
    return (
       <>
-         <div className='container d-flex flex-column flex-lg-row align-items-center justify-content-between mt-5 px-3'>
-            <div className='d-flex flex-column align-items-start px-4 order-1 order-lg-0' style={{ width: '65%' }}>
-               <div className='d-flex w-100'>
-                  <h1 className='text-wrap custom-heading'>
-                     Meet Chatbot, <span className='text-primary custom-heading h1'>Anna</span>
+         <Header navlinks={navlinks} />
+         <section
+            id='home'
+            className='section section-first bg-white container d-flex flex-column flex-lg-row align-items-center justify-content-between mb-4 px-0'
+         >
+            <div className='d-flex flex-column align-items-center align-items-lg-start px-4 order-1 order-lg-0' style={{ width: '65%' }}>
+               <div>
+                  <h1 className='text-wrap custom-heading d-inline-block'>
+                     Meet Chatbot, <h1 className='d-inline-block text-primary custom-heading'>Anna</h1>
                   </h1>
                </div>
-               <p>
+               <p className='mb-3'>
                   Anna aid senior high school students awareness and recommend various degree programs for college. Are you ready to know what is the
                   recommended degree programs for you?
                </p>
@@ -26,52 +42,142 @@ const LandingPage = () => {
                </button>
             </div>
             <div className='order-0 order-lg-1 mb-5 mb-lg-0'>
-               <img src={Anna} alt='Anna' className='anna-img' />
+               <img src={anna} alt='Anna' className='anna-img' />
             </div>
-         </div>
+         </section>
 
-         <div className='mt-auto bg-primary'>
-            <div className='wave wave-fill-white'>
-               <svg data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'>
-                  <path
-                     d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z'
-                     className='shape-fill'
-                  ></path>
-               </svg>
-            </div>
-
-            <div className='d-flex flex-column flex-md-row align-items-center justify-content-center flex-wrap px-5 pb-2'>
-               <div className='d-flex flex-column features p-3'>
+         <section id='about' className='section mt-5 bg-primary py-5'>
+            <div className='container px-0 d-flex flex-column flex-md-row align-items-center justify-content-center flex-wrap'>
+               <div className='d-flex flex-column align-items-center feature p-3'>
                   <MdRecommend className='icon-large mb-1' />
-                  <div>
-                     <h1 className='h6 m-0'>
-                        RIASEC
-                        <span className='mx-1' style={{ fontFamily: 'sans-serif' }}>
-                           &amp;
-                        </span>
-                        Strand
-                     </h1>
-                  </div>
-                  <small className='thin-text'>Recommend courses based on RIASEC result and based on strand.</small>
+                  <h2 className='h6 m-0 text-center'>RIASEC &amp; Strand</h2>
+                  <small className='thin-text text-center'>Recommend courses based on RIASEC result and based on strand.</small>
                </div>
 
-               <div className='d-flex flex-column features p-3'>
-                  <HiLightBulb className='icon-large mb-1' />
-                  <div>
-                     <h1 className='h6 m-0'>Provide Awareness</h1>
-                     <small className='thin-text'>Awareness on different degree programs in college</small>
-                  </div>
+               <div className='d-flex flex-column  align-items-center feature p-3'>
+                  <img className='custom-icon-large mb-1' src={brainstrom} alt='awareness' />
+                  <h2 className='h6 m-0 text-center'>Provide Awareness</h2>
+                  <small className='thin-text text-center'>Awareness on different degree programs in college</small>
                </div>
 
-               <div className='d-flex flex-column features p-3'>
+               <div className='d-flex flex-column align-items-center feature p-3'>
                   <FaScroll className='icon-large mb-1' />
-                  <div>
-                     <h1 className='h6 m-0'>Cooperative Principle</h1>
-                     <small className='thin-text'>Chatbot Anna is guided by the “Cooperative Principle.”</small>
+                  <h2 className='h6 m-0 text-center'>Cooperative Principle</h2>
+                  <small className='thin-text text-center'>Chatbot Anna is guided by the “Cooperative Principle.”</small>
+               </div>
+            </div>
+            <div className='container d-flex flex-column px-0'>
+               <h1 className='custom-heading my-5 text-center'>ABOUT</h1>
+               <div className='px-3'>
+                  <h5 className='fw-bold'>Anna</h5>
+                  <p>
+                     This is Anna, a career recommender chatbot. Anna helps you, a senior high school student who is looking for recommendations on
+                     what degree programs to take on college by getting your interest and sharing you information about existing degree programs out
+                     there. Anna will help you with your queries and feel free to ask Anna for recommendation, she will be very pleased to meeting
+                     you.
+                  </p>
+               </div>
+               <div className='px-3'>
+                  <h5 className='fw-bold'>Research Study &amp; Problem</h5>
+                  <p>
+                     Shifting and dropout is one of the prevalent problems faced by college students especially to those who are within the generation
+                     Z.
+                  </p>
+               </div>
+            </div>
+         </section>
+         <section id='team' className='section bg-white py-5'>
+            <div className='container d-flex flex-column px-0'>
+               <h1 className='custom-heading text-primary my-5 text-center'>THE TEAM</h1>
+               <div className='d-flex flex-column flex-md-row justify-content-center align-items-center'>
+                  <div className='d-flex flex-column align-items-center member p-3'>
+                     <img className='mb-3' src={reymond} alt='reymond' width='145' />
+                     <p className='m-0 fw-bold text-break text-center'>Rey Mond Gomera</p>
+                     <p className='m-0 text-break text-center'>rgomera_190000000465@uic.edu.ph</p>
+                     <p className='m-0 text-center'>UI/UX DESIGNER | PROGRAMMER | QA | TECHNICAL WRITER</p>
+                  </div>
+                  <div className='d-flex flex-column align-items-center member p-3'>
+                     <img className='mb-3' src={john} alt='reymond' width='145' />
+                     <p className='m-0 fw-bold text-break text-center'>John Michael Amto</p>
+                     <p className='m-0 text-break text-center'>jamto_190000000229@uic.edu.ph</p>
+                     <p className='m-0 text-center'>PROGRAMMER | TECHNICAL WRITER</p>
+                  </div>
+                  <div className='d-flex flex-column align-items-center member p-3'>
+                     <img className='mb-3' src={ryan} alt='reymond' width='145' />
+                     <p className='m-0 fw-bold text-break text-center'>Ryan Christian Hibaya</p>
+                     <p className='m-0 text-break text-center'>rhibaya_190000001021@uic.edu.ph</p>
+                     <p className='m-0 text-center'>PROJECT MANAGER | TECHNICAL WRITER | TESTER</p>
                   </div>
                </div>
             </div>
-         </div>
+         </section>
+
+         <section id='terms-conditions' className='section bg-primary py-5'>
+            <div className='container d-flex flex-column px-3  '>
+               <h1 className='custom-heading my-5 text-center'>TERMS AND CONDITIONS</h1>
+               <p className='bg-grey rounded p-3 mb-3'>
+                  As you converse with Anna, you are to agree to bounded by these terms and conditions: Your responses to Anna will be recorded and be
+                  used for analysis. You agree that the information you provided in this study will include your basic information (Name, Age, Sex)
+                  and senior high school strand for these information will be necessary for identification and for the recommendation of degree
+                  programs.
+               </p>
+
+               <div className='bg-grey rounded p-3 mb-3'>
+                  <div>
+                     <span className='fw-bold'>TITLE OF STUDY:</span>
+                     <p>ANNA: A Web-based Chatbot for Career Planning following Cooperative Principle</p>
+                  </div>
+                  <div>
+                     <span className='fw-bold'>RESEARCHERS:</span>
+                     <p>Rey Mond Gomera, John Michael Amto, Ryan Christian Hibaya</p>
+                  </div>
+                  <div>
+                     <span className='fw-bold'>CONFIDENTIALITY:</span>
+                     <p>
+                        RA 10173 or the Data Privacy Act protects individuals from unauthorized processing of personal information. To ensure that
+                        your information protected, The researchers will follow this law to keep your information safe and confidential.
+                     </p>
+                  </div>
+                  <div>
+                     <span className='fw-bold'>DEFINITIONS:</span>
+                     <p>
+                        Throughout the conversation, Anna will be responding to possible jargons. To ensure that you understand Anna, the definition
+                        of words will be provided:
+                     </p>
+
+                     <div className='ms-4'>
+                        <p className='mb-1'>
+                           <span className='fw-bold'>Degree Program</span> - A class that a college of university offers to students. (Bachelor in
+                           science in Information Technology, etc..)
+                        </p>
+                        <p className='mb-1'>
+                           <span className='fw-bold'>RIASEC</span> - A personality test that asks about your interest, skills, ability, and
+                           aspirations which will help you decide on what career to pursue based on these attributes.
+                        </p>
+                        <p className='mb-1'>
+                           <span className='fw-bold'>Senior high school strand</span> - Disciplines that are offered by schools to senior high school
+                           students that would prepare them for college.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         <section id='feedback' className='section bg-white py-5'>
+            <div className='container d-flex flex-column px-0 '>
+               <h1 className='custom-heading my-5 text-center text-primary'>TERMS AND CONDITIONS</h1>
+               <form className='d-flex flex-column justify-content-center align-items-center'>
+                  <input className='form-control mb-4' type='email' id='email' placeholder='Email Addres' />
+                  <textarea className='form-control mb-4' id='feedback' rows='12' placeholder='Tell us how can we improve...'></textarea>
+                  <button className='btn btn-primary rounded-pill px-3' type='button'>
+                     Submit
+                  </button>
+               </form>
+            </div>
+         </section>
+
+         <footer className='mt-auto bg-primary p-2 text-center'>ANNA | Copyright © 2022</footer>
       </>
    );
 };

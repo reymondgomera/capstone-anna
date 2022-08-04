@@ -1,92 +1,74 @@
-.sidebar {
-   min-height: 100%;
-   position: fixed;
-   top: 0;
-   bottom: 0;
-   z-index: 100;
-
-   background-color: var(--white);
-   transition: 0.4s;
+.navbar {
+   padding: 15px 0 !important;
+   z-index: 500 !important;
 }
-.sidebar.active {
-   width: 250px;
+.navbar-nav {
+   color: var(--black) !important;
 }
-.sidebar.inactive {
-   width: 70px;
-}
-.sidebar.inactive span {
-   display: none;
+.nav-item {
+   padding: 10px 15px !important;
 }
 
-.sidebar-link > div,
-.sidebar-brand {
-   font-size: 1.1rem;
-   text-decoration: none;
-
-   margin: 15px 20px;
+.nav-link {
+   padding: 0 !important;
+   color: inherit !important;
+   font-size: 1.05rem !important;
+}
+.navbar-nav .nav-item:last-child {
+   padding-right: 0 !important;
 }
 
-.sidebar-link,
-.sidebar-brand {
-   color: var(--black);
-   text-decoration: none;
-}
-.sidebar-link.active-path {
+.nav-link:hover {
    color: var(--primary) !important;
 }
 
-.sidebar-link > div.inactive {
-   margin: 15px 0px;
+.navbar-toggler-icon {
+   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgb(58, 58, 58) ' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E") !important;
+}
+.navbar-toggler {
+   border-color: var(--black) !important;
+}
+.navbar-toggler:focus {
+   text-decoration: none !;
+   outline: none !important;
+   box-shadow: 0 0 0 0.25rem rgba(58, 58, 58, 0.25) !important;
 }
 
-.sidebar-link:focus,
-.sidebar-link:hover,
-.sidebar-brand:hover {
-   color: var(--primary) !important;
-}
-
-/* wave */
-.wave {
-   top: 0;
-   left: 0;
-   width: 100%;
-   overflow: hidden;
-   line-height: 0;
-}
-
-.wave svg {
-   position: relative;
-   display: block;
-   width: calc(100% + 1.3px);
-   height: 140px;
-}
-
-.wave-fill-white {
-   fill: var(--white);
-}
-.wave-fill-primary {
-   fill: var(--primary);
-}
-
-.features {
+.feature,
+.member {
    width: 30%;
 }
 
-@media (max-width: 767px) {
-   .features {
+.section-first {
+   margin-top: 120px;
+}
+
+/* media quiries */
+@media (max-width: 992px) {
+   .section h1 {
+      font-size: 1.5rem;
+   }
+   .section p,
+   .section button {
+      font-size: 0.9rem;
+   }
+
+   .nav-link {
+      text-align: center !important;
+   }
+}
+
+@media (max-width: 768px) {
+   .feature,
+   .member {
       text-align: center;
       width: 100%;
    }
 
-   .features > svg {
+   .feature > svg,
+   .feature > img,
+   .member > img {
       display: block;
-      margin: auto;
-   }
-
-   .h6 {
-      font-size: 0.8rem !important;
-   }
-   .h5 {
-      font-size: 1rem !important;
+      margin: 0 auto;
    }
 }
