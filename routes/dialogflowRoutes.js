@@ -9,16 +9,24 @@ const chatbot = require('../chatbot/chatbot.js');
 
 module.exports = app => {
    app.post('/api/df_text_query', async (req, res) => {
-      const { text, userId, parameters } = req.body;
-
-      const responses = await chatbot.textQuery(text, userId, parameters);
-      res.json(responses[0].queryResult);
+      try {
+         const { text, userId, parameters } = req.body;
+         const responses = await chatbot.textQuery(text, userId, parameters);
+         res.json(responses[0].queryResult);
+      } catch (err) {
+         console.log(err.messaage);
+         res.status(500).send('Server Error');
+      }
    });
 
    app.post('/api/df_event_query', async (req, res) => {
-      const { event, userId, parameters } = req.body;
-
-      const responses = await chatbot.eventQuery(event, userId, parameters);
-      res.json(responses[0].queryResult);
+      try {
+         const { event, userId, parameters } = req.body;
+         const responses = await chatbot.eventQuery(event, userId, parameters);
+         res.json(responses[0].queryResult);
+      } catch (err) {
+         console.log(err.messaage);
+         res.status(500).send('Server Error');
+      }
    });
 };
