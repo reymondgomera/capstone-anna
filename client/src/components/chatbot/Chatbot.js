@@ -32,11 +32,13 @@ const Chatbot = () => {
    const { isAgreeTermsConditions, setIsAgreeTermsConditions, showBot, setShowbot, disabledInput, botChatLoading, setBotChatLoading } =
       useContext(ChatbotContext);
    const messagesRef = useRef(null);
+   const [user, setUser] = useState({ name: '', age: '', sex: '', strand: '' });
+   const [riasec, setRiasec] = useState({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
 
    // if cookies does not exist set cookies else do nothing, cookies path = '/ - accessible to all pages
    if (!cookies.get('userId')) cookies.set('userId', uuid(), { path: '/' });
 
-   const df_text_query = async text => {
+   const df_text_query = async (text, parameters) => {
       let userSays = {
          speaks: 'user',
          msg: {
@@ -57,20 +59,56 @@ const Chatbot = () => {
       });
       const data = await response.json();
       setBotChatLoading(false);
+      console.dir(data);
+
+      // get parameters data and set it to state
+      if (data.parameters.fields) {
+         const fields = data.parameters.fields;
+         if (fields.name) setUser(prev => ({ ...prev, name: fields.name.stringValue }));
+         else if (fields.age) setUser(prev => ({ ...prev, age: fields.age.numberValue }));
+         else if (fields.sex) setUser(prev => ({ ...prev, sex: fields.sex.stringValue }));
+         else if (fields.strand) setUser(prev => ({ ...prev, strand: fields.strand.stringValue }));
+      }
 
       data.fulfillmentMessages.forEach(async msg => {
          const botSays = {
             speaks: 'bot',
             msg: msg,
          };
+
          setMessages(prev => [...prev, botSays]);
+
+         // trigger something based on the payload sent by dialogflow
+         if (msg.payload && msg.payload.fields.riasec) {
+            const riasecValue = msg.payload.fields.riasec.stringValue;
+            switch (riasecValue) {
+               case 'realistic':
+                  setRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
+                  break;
+               case 'investigative':
+                  setRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
+                  break;
+               case 'artistic':
+                  setRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
+                  break;
+               case 'social':
+                  setRiasec(prev => ({ ...prev, social: prev.social + 1 }));
+                  break;
+               case 'enterprising':
+                  setRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
+                  break;
+               case 'conventional':
+                  setRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
+                  break;
+            }
+         } else if (msg.payload && msg.payload.fields.riasec_last_question) handleRiasecRecommendation(riasec);
       });
    };
 
-   const df_event_query = async event => {
+   const df_event_query = async (event, parameters) => {
       setBotChatLoading(true);
 
-      const body = { event, userId: cookies.get('userId') };
+      const body = { event, userId: cookies.get('userId'), parameters };
       const response = await fetch('/api/df_event_query', {
          method: 'POST',
          headers: { 'Content-Type': 'application/json' },
@@ -78,6 +116,7 @@ const Chatbot = () => {
       });
       const data = await response.json();
       setBotChatLoading(false);
+      console.dir(data);
 
       data.fulfillmentMessages.forEach(async msg => {
          const botSays = {
@@ -88,10 +127,32 @@ const Chatbot = () => {
       });
    };
 
-   const send = e => {
-      e.preventDefault();
-      df_text_query(textMessage);
-      setTextMessage('');
+   // const passedParams = () => {
+   //    df_event_query('SAMPLE_RECOMMEND', sampleObject);
+   // };
+
+   const handleRiasecRecommendation = riasecScores => {
+      const sortRiasec = Object.entries(riasecScores).sort(([, a], [, b]) => b - a);
+      console.log('\nsort riasec = ', sortRiasec);
+      const sameScore = sortRiasec.filter(el => sortRiasec[0][1] === el[1]);
+      console.log('sameScore = ', sameScore);
+
+      // sort the riasec
+      // get the riasec areas where same as the  highes riasec score
+      // if sameScore as highes score is > 3 then randomly select among those riasec areas, else get the top 3 from the sortRiasec
+      let RIASEC_CODE = [];
+
+      if (sameScore.length > 3) {
+         // mag randomly pick among those highes riasec score as the RIASEC code
+         for (let i = 1; i <= 3; i++) {
+            const random = Math.floor(Math.random() * sameScore.length); // random index number based on the sameScore.length
+            RIASEC_CODE.push(...sameScore.splice(random, 1)); // uses random delete which return a value -> to avoid duplicated value of RIASEC, then stored to new array
+         }
+      } else RIASEC_CODE = sortRiasec.slice(0, 3);
+
+      console.log('RIASEC CODE = ', RIASEC_CODE);
+
+      df_event_query('RIASEC_RECOMMENDATION', RIASEC_CODE);
    };
 
    const renderCards = cards => {
@@ -118,7 +179,8 @@ const Chatbot = () => {
          return (
             <QuickReplies
                key={i}
-               text={message.msg.payload.fields.text ? message.msg.payload.fields.text.stringValue : null}
+               messages={messages}
+               setMessages={setMessages}
                replyClick={handleQuickReplyPayload}
                speaks={message.speaks}
                payload={message.msg.payload.fields.quick_replies.listValue.values}
@@ -135,23 +197,42 @@ const Chatbot = () => {
       } else return null;
    };
 
+   const send = e => {
+      e.preventDefault();
+      df_text_query(textMessage);
+      setTextMessage('');
+   };
+
+   const handleMessagesScrollToBottom = () => {
+      // element.scrollTop = element.scrollHeight - element is the container of message
+      // for automatic scoll when new message -> messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+      // for smooth scrolling, added scroll-behavior: smooth in css for chatbot-messaes class
+      // if (messagesRef.current) messagesRef.current.scrollIntoView({ behavior: 'smooth' });
+      if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+   };
+
    const handleQuickReplyPayload = (e, payload, text) => {
       e.preventDefault(); // will only work for <a> tag or buttons submit
       e.stopPropagation(); // will only work for <a> tag or buttons submit
 
+      let humanSays = {
+         speaks: 'user',
+         msg: {
+            text: {
+               text: text,
+            },
+         },
+      };
+
       switch (payload) {
          case 'DEGREE_PROGRAMS_OPTIONS_YES':
-            let humanSays = {
-               speaks: 'user',
-               msg: {
-                  text: {
-                     text: text,
-                  },
-               },
-            };
-
             setMessages(prev => [...prev, humanSays]);
             df_event_query('DEGREE_PROGRAMS_OPTIONS_YES');
+            break;
+
+         case 'RIASEC_START':
+            setMessages(prev => [...prev, humanSays]);
+            df_event_query('RIASEC_START');
             break;
 
          default:
@@ -160,7 +241,7 @@ const Chatbot = () => {
       }
    };
 
-   const resolveAfterXSeconds = x => {
+   const handleResolveAfterXSeconds = x => {
       return new Promise(resolve => {
          setTimeout(() => {
             resolve(x);
@@ -169,18 +250,14 @@ const Chatbot = () => {
    };
 
    const handleTermsConditionAgree = () => {
-      resolveAfterXSeconds(1);
+      handleResolveAfterXSeconds(1);
       df_event_query('Welcome');
       setIsAgreeTermsConditions(true);
    };
 
    useEffect(() => {
-      // element.scrollTop = element.scrollHeight - element is the container of message
-      // for automatic scoll when new message -> messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-      // for smooth scrolling, added scroll-behavior: smooth in css for chatbot-messaes class
-      if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      // if (messagesRef.current) messagesRef.current.scrollIntoView({ behavior: 'smooth' });
-   }, [messages]);
+      handleMessagesScrollToBottom();
+   }, [messages, showBot]);
 
    useEffect(() => {
       if (cookies.get('termsCondition') !== '' && cookies.get('termsCondition') !== 'false') setIsAgreeTermsConditions(false);
@@ -201,9 +278,12 @@ const Chatbot = () => {
                </div>
                {/* chatbot messages */}
                <div ref={messagesRef} className='chatbot-messages'>
+                  {/* <button className='btn btn-primary' onClick={() => handleRiasecRecommendation()}>
+                     Identify RIASEC Area
+                  </button> */}
+
                   {renderMessages(messages)}
                   {/* <div ref={messageEnd}></div> */}
-
                   {botChatLoading && (
                      <div className='message bot'>
                         <div>
@@ -233,6 +313,7 @@ const Chatbot = () => {
             <img className='chathead' src={chathead} alt='chathead' onClick={() => setShowbot(true)} />
          )}
 
+         {/* terms & conditions modal */}
          <Modal title='Terms and Conditions' target='modal-terms-conditions' size='modal-lg'>
             <div className='p-2'>
                <p className='mb-1'>
@@ -280,7 +361,6 @@ const Chatbot = () => {
                <input
                   className='form-check-input'
                   onChange={() => handleTermsConditionAgree()}
-                  data-bs-dismiss='modal'
                   type='checkbox'
                   value=''
                   id='terms-conditions-check'

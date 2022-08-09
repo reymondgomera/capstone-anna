@@ -29,9 +29,8 @@ const LandingPage = () => {
          >
             <div className='d-flex flex-column align-items-center align-items-lg-start px-4 order-1 order-lg-0' style={{ width: '65%' }}>
                <div>
-                  <h1 className='text-wrap custom-heading d-inline-block'>
-                     Meet Chatbot, <h1 className='d-inline-block text-primary custom-heading'>Anna</h1>
-                  </h1>
+                  <h1 className='text-wrap custom-heading d-inline-block'>Meet Chatbot,</h1>
+                  <h1 className='d-inline-block text-primary custom-heading ms-1'>Anna</h1>
                </div>
                <p className='mb-3'>
                   Anna aid senior high school students awareness and recommend various degree programs for college. Are you ready to know what is the

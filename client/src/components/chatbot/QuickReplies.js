@@ -1,15 +1,19 @@
 import QuickReply from './QuickReply';
-import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
 import { ChatbotContext } from '../../context/ChatbotContext';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 
-const QuickReplies = ({ replyClick, speaks, text, payload }) => {
-   const [isVisible, setIsVisible] = useState(true); // use toggle visible of quickreply after clicking
+const QuickReplies = ({ replyClick, speaks, text, payload, messages, setMessages }) => {
    const { setDisabledInput } = useContext(ChatbotContext);
 
+   const removeQuickRepliesAfterClick = (messages, setMessage) => {
+      const allMessages = messages;
+      messages.pop();
+      setMessage(allMessages);
+   };
+
    const handleClick = (e, payload, text) => {
+      removeQuickRepliesAfterClick(messages, setMessages);
       replyClick(e, payload, text);
-      setIsVisible(false);
       setDisabledInput(false);
    };
 
@@ -21,7 +25,8 @@ const QuickReplies = ({ replyClick, speaks, text, payload }) => {
 
    return (
       <>
-         {text && (
+         {/* text replies will now only have quick replies, dont have text */}
+         {/* {text && (
             <div className={`message ${speaks !== 'bot' && 'user'}`}>
                {speaks === 'bot' && (
                   <div>
@@ -30,8 +35,8 @@ const QuickReplies = ({ replyClick, speaks, text, payload }) => {
                )}
                <div className={`message-text ${speaks === 'bot' ? 'bot' : 'user'}`}>{text}</div>
             </div>
-         )}
-         <div className={`message-quick-replies ${!isVisible && 'd-none'}`}>{payload && renderQuickReplies(payload)}</div>
+         )} */}
+         <div className='message-quick-replies'>{payload && renderQuickReplies(payload)}</div>
       </>
    );
 };

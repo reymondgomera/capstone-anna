@@ -27,7 +27,6 @@ function App() {
    return (
       <ChatbotContext.Provider value={ChatbotContextValue}>
          <Router>
-            {/* apply page transition if possible soon - https://www.youtube.com/watch?v=FdrEjwymzdY&t=13s */}
             <Routes>
                <Route path='/' element={<LandingPage />} />
             </Routes>

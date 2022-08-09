@@ -188,14 +188,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 .anna-logo {
-   width: 65px;
+   width: 55px;
 }
 
 .custom-heading {
    font-family: GTWalsheimProBold, sans-serif;
 }
 .thin-text {
-   font-family: GTWalsheimProThin;
+   font-family: GTWalsheimProThin, sans-serif;
 }
 
 .icon-medium {
