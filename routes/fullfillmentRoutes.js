@@ -8,8 +8,18 @@ module.exports = app => {
       console.log('paramters = ', JSON.stringify(agent.parameters));
       console.log('context = ', JSON.stringify(agent.contexts));
       console.log('messages = ', JSON.stringify(agent.consoleMessages) + '\n');
-      // agent.conv().data
+      console.log('query = ', agent.query); // user quiery
+      console.log('type of query = ', typeof agent.query);
+      // Utilities funcions
+      const capitalizeFirstLetter = string => {
+         return string.charAt(0).toUpperCase() + string.slice(1);
+      };
+      const getAandAn = string => {
+         const vowels = ['A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u'];
+         return vowels.includes(string.charAt(0)) ? 'an' : 'a';
+      };
 
+      // intent funcions handler
       const handleGetAge = () => {
          if (agent.parameters.hasOwnProperty('age')) {
             if (agent.parameters.age <= 0) {
@@ -52,6 +62,7 @@ module.exports = app => {
          agent.add(
             `what hello ${parameters.name} fullfillment passed paramters , you are a ${parameters.riasec} ${parameters.sampleArray[0]} ${parameters.sampleArray[1]}`
          );
+         n;
          // the parameter  passsed  from front to dialogflow will be avaiable in the context
          // the agent.parameters is empty because the paramaters passed is in the context
          // dialogflow automatically create context based on the event name which contains the context you passed from front end
@@ -67,35 +78,58 @@ module.exports = app => {
       };
 
       const handleRiasecRecommendation = agent => {
+         // context based on the event name - ex : sample_recommend, which contains paramaters sent from front end
+         // the parameter  passsed  from front to dialogflow will be avaiable in the context
+         // the agent.parameters is empty because the paramaters passed is in the context
+         // dialogflow automatically create context based on the event name which contains the context you passed from front-end
+         // dialogflow does not store the context passed from front-end to agent.parameters instead in the agent.context
+
          const context = agent.contexts.filter(el => el.name === 'riasec_recommendation'); // get the specific context
          const parameters = context[0].parameters;
-
-         console.log('parameters', parameters);
 
          const riasecAreas = {
             realistic: 'who are often good at mechanical or athletic jobs.',
             investigative: 'who like to watch, learn, analyze and solve problems.',
-            artistic: 'like to work in unstructured situations where they can use their creativity',
+            artistic: 'like to work in unstructured situations where you can use your creativity.',
             social: 'who like to work with other people, rather than things.',
             enterprising: 'who like to work with others and enjoy persuading and and performing.',
-            conventional: 'who are very detail oriented,organized and like to work with data.',
+            conventional: 'who are very detail oriented, organized and like to work with data.',
          };
 
-         const vowel = ['A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u'];
-
-         const riasecAreasIdentify = `Now. I already know the things you are interested in. You are ${
-            vowel.includes(parameters['0'][0].charAt(0)) ? 'an' : 'a'
-         }  “${parameters['0'][0]}”, “${parameters['1'][0]}” and “${parameters['2'][0]}” person.`;
+         const riasecAreasIdentify = `
+         Now. I already know the things you are interested in. You are ${getAandAn(parameters['0'][0])} “${capitalizeFirstLetter(
+            parameters['0'][0]
+         )}”, “${capitalizeFirstLetter(parameters['1'][0])}” and “${capitalizeFirstLetter(parameters['2'][0])}” person.`;
 
          const riasecAreasDescription = `
-         You’re ${vowel.includes(parameters['0'][0].charAt(0)) ? 'an' : 'a'} "${parameters['0'][0]}" person ${riasecAreas[parameters['0'][0]]} 
-         You’re also ${vowel.includes(parameters['1'][0].charAt(0)) ? 'an' : 'a'} "${parameters['1'][0]}" person, ${riasecAreas[parameters['1'][0]]} 
-         Lastly, I found out that your are ${vowel.includes(parameters['2'][0].charAt(0)) ? 'an' : 'a'} "${parameters['2'][0]}" person, ${
+         You’re ${getAandAn(parameters['0'][0])} "${capitalizeFirstLetter(parameters['0'][0])}" person ${riasecAreas[parameters['0'][0]]} 
+         You’re also ${getAandAn(parameters['1'][0])} "${capitalizeFirstLetter(parameters['1'][0])}" person, ${riasecAreas[parameters['1'][0]]} 
+         Lastly, I found out that your are ${getAandAn(parameters['2'][0])} "${capitalizeFirstLetter(parameters['2'][0])}" person, ${
             riasecAreas[parameters['2'][0]]
-         } `;
+         }`;
 
          agent.add(riasecAreasIdentify);
          agent.add(riasecAreasDescription);
+      };
+
+      const checkUncertainty = agent => {
+         // idea: assign this function to question-qustion-<number>-yes question-qustion-<number>-no question-qustion-<number>-fallback
+         // idea: to check if their answer is cotains uncertain words or dont have idea then trigger intent for uncertain then set the context same as fallback to go back
+         // idea: assign by iterating/looping 42 times, assign intent names dynamically using number
+
+         const userQuery = agent.query;
+         const texts = ['i dont know', "i don't know", 'maybe', 'perhaps', 'probably', 'might be'];
+
+         let isUnsure = false;
+         for (let i = 0; i < texts.length; i++) {
+            if (userQuery.includes(texts[i])) {
+               isUnsure = true;
+               break;
+            }
+         }
+
+         if (isUnsure) agent.add('You are unsure of what you said. Can please provide me an answer that you are sure and not being uncertain.');
+         else agent.consoleMessages.forEach(message => agent.add(message));
       };
 
       // intents that has fulfillment enable
@@ -106,6 +140,8 @@ module.exports = app => {
       intentMap.set('riasec-start', handleRiasecStart);
       intentMap.set('sample-recommend', handleSampleRecommend);
       intentMap.set('riasec-recommendation', handleRiasecRecommendation);
+
+      // intentMap.set('riasec-start-fallback', checkUncertainty);
       agent.handleRequest(intentMap);
    });
 };
