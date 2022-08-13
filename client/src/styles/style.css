@@ -43,6 +43,39 @@
    margin-top: 120px;
 }
 
+/* admin sidebar */
+.sidebar {
+   min-height: 100vh;
+   width: 230px;
+   top: 0;
+   bottom: 0;
+   padding: 24px;
+   background-color: var(--primary);
+}
+.sidebar-links {
+   padding: 0;
+   white-space: normal;
+   margin-top: 130px;
+   list-style-type: none;
+}
+.sidebar-link {
+   display: flex;
+   font-weight: bold;
+   padding: 8px;
+   cursor: pointer;
+   text-decoration: none;
+   color: var(--black);
+}
+.sidebar-link:hover,
+.sidebar-link.active {
+   color: var(--white);
+}
+
+/* admin content */
+.admin-contents {
+   width: 100%;
+}
+
 /* media quiries */
 @media (max-width: 992px) {
    .section h1 {

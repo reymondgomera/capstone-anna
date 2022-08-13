@@ -34,6 +34,8 @@ const Chatbot = () => {
    const messagesRef = useRef(null);
    const [user, setUser] = useState({ name: '', age: '', sex: '', strand: '' });
    const [riasec, setRiasec] = useState({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+   const [fallbackCount, setFallbackCount] = useState({});
+   const [endConversation, setEndConversation] = useState(false);
 
    // if cookies does not exist set cookies else do nothing, cookies path = '/ - accessible to all pages
    if (!cookies.get('userId')) cookies.set('userId', uuid(), { path: '/' });
@@ -51,85 +53,165 @@ const Chatbot = () => {
       setMessages(prev => [...prev, userSays]);
       setBotChatLoading(true);
 
-      const body = { text, userId: cookies.get('userId') };
-      const response = await fetch('/api/df_text_query', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(body),
-      });
-      const data = await response.json();
-      setBotChatLoading(false);
-      console.dir(data);
+      try {
+         const body = { text, userId: cookies.get('userId'), parameters };
+         const response = await fetch('/api/df_text_query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+         });
+         const data = await response.json();
+         setBotChatLoading(false);
+         console.dir(data);
 
-      // get parameters data and set it to state
-      if (data.parameters.fields) {
-         const fields = data.parameters.fields;
-         if (fields.name) setUser(prev => ({ ...prev, name: fields.name.stringValue }));
-         else if (fields.age) setUser(prev => ({ ...prev, age: fields.age.numberValue }));
-         else if (fields.sex) setUser(prev => ({ ...prev, sex: fields.sex.stringValue }));
-         else if (fields.strand) setUser(prev => ({ ...prev, strand: fields.strand.stringValue }));
-      }
+         // provide message if response status 200, elese need to add chatbot message if server error 500
 
-      data.fulfillmentMessages.forEach(async msg => {
+         if (data) {
+            if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
+               setEndConversation(false);
+               setFallbackCount({});
+               setUser({ name: '', age: '', sex: '', strand: '' });
+               setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+            } else if (endConversation) {
+               // trigger if the conversation was ended because of fallback exceed trigger limit
+               df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
+            } else if (data.intent && data.intent.isFallback) {
+               // set fallbackCount if fallback is trigger
+               const intentName = data.intent.displayName;
+               if (fallbackCount[`${intentName}`] >= 5) {
+                  console.log('fallbackCount = ', fallbackCount[`${intentName}`]);
+                  df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
+                  setEndConversation(true);
+                  return;
+               }
+
+               // object intent name does not exist assign 1 if exisit just increment by 1
+               if (!fallbackCount[`${intentName}`]) setFallbackCount(prev => ({ ...prev, [intentName]: 1 }));
+               else setFallbackCount(prev => ({ ...prev, [intentName]: prev[`${intentName}`] + 1 }));
+            }
+
+            // get parameters data and set it to state
+            if (data.parameters.fields) {
+               const fields = data.parameters.fields;
+               if (fields.name) setUser(prev => ({ ...prev, name: fields.name.stringValue }));
+               else if (fields.age) setUser(prev => ({ ...prev, age: fields.age.numberValue }));
+               else if (fields.sex) setUser(prev => ({ ...prev, sex: fields.sex.stringValue }));
+               else if (fields.strand) setUser(prev => ({ ...prev, strand: fields.strand.stringValue }));
+            }
+         } else {
+            const botSays = {
+               speaks: 'bot',
+               msg: {
+                  text: {
+                     text: 'Sorry. I am having trouble 🤕. I need to terminate. Will be back later.',
+                  },
+               },
+            };
+            setMessages(prev => [...prev, botSays]);
+         }
+
+         data.fulfillmentMessages.forEach(async msg => {
+            const botSays = {
+               speaks: 'bot',
+               msg: msg,
+            };
+            setMessages(prev => [...prev, botSays]);
+
+            // trigger something based on the payload sent by dialogflow
+            if (msg.payload && msg.payload.fields && msg.payload.fields.riasec) {
+               const riasecValue = msg.payload.fields.riasec.stringValue;
+               switch (riasecValue) {
+                  case 'realistic':
+                     setRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
+                     break;
+                  case 'investigative':
+                     setRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
+                     break;
+                  case 'artistic':
+                     setRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
+                     break;
+                  case 'social':
+                     setRiasec(prev => ({ ...prev, social: prev.social + 1 }));
+                     break;
+                  case 'enterprising':
+                     if (msg.payload.fields.riasec_last_question) {
+                        // trigger to get the up to date value of riasec with out waiting for the state to finish
+                        // because triggering the handleRiasecRecommendation() will not able to get the updated value of riasec state
+                        // applies only for enterprising since its the last question
+                        handleRiasecRecommendation({ ...riasec, enterprising: riasec.enterprising + 1 });
+                     }
+                     setRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
+                     break;
+                  case 'conventional':
+                     setRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
+                     break;
+               }
+            }
+
+            if (msg.payload && msg.payload.fields && !msg.payload.fields.riasec && msg.payload.fields.riasec_last_question) {
+               // trigger recommendation after last question and answer was "no"
+               handleRiasecRecommendation(riasec);
+            }
+         });
+      } catch (err) {
+         console.log(err.message);
+
          const botSays = {
             speaks: 'bot',
-            msg: msg,
+            msg: {
+               text: {
+                  text: 'Sorry. I am having trouble 🤕. I need to terminate. Will be back later.',
+               },
+            },
          };
-
          setMessages(prev => [...prev, botSays]);
-
-         // trigger something based on the payload sent by dialogflow
-         if (msg.payload && msg.payload.fields.riasec) {
-            const riasecValue = msg.payload.fields.riasec.stringValue;
-            switch (riasecValue) {
-               case 'realistic':
-                  setRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
-                  break;
-               case 'investigative':
-                  setRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
-                  break;
-               case 'artistic':
-                  setRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
-                  break;
-               case 'social':
-                  setRiasec(prev => ({ ...prev, social: prev.social + 1 }));
-                  break;
-               case 'enterprising':
-                  setRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
-                  break;
-               case 'conventional':
-                  setRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
-                  break;
-            }
-         } else if (msg.payload && msg.payload.fields.riasec_last_question) handleRiasecRecommendation(riasec);
-      });
+      }
    };
 
    const df_event_query = async (event, parameters) => {
-      setBotChatLoading(true);
+      try {
+         setBotChatLoading(true);
 
-      const body = { event, userId: cookies.get('userId'), parameters };
-      const response = await fetch('/api/df_event_query', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(body),
-      });
-      const data = await response.json();
-      setBotChatLoading(false);
-      console.dir(data);
+         const body = { event, userId: cookies.get('userId'), parameters };
+         const response = await fetch('/api/df_event_query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+         });
+         const data = await response.json();
+         setBotChatLoading(false);
+         console.dir(data);
 
-      data.fulfillmentMessages.forEach(async msg => {
+         //clear all state when welcome intent trigger
+         if (data.intent.displayName === 'Default Welcome Intent') {
+            setUser({ name: '', age: '', sex: '', strand: '' });
+            setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+            setEndConversation(false);
+            setFallbackCount({});
+         }
+
+         data.fulfillmentMessages.forEach(async msg => {
+            const botSays = {
+               speaks: 'bot',
+               msg: msg,
+            };
+            setMessages(prev => [...prev, botSays]);
+         });
+      } catch (err) {
+         console.log(err.message);
+
          const botSays = {
             speaks: 'bot',
-            msg: msg,
+            msg: {
+               text: {
+                  text: 'Sorry. I am having trouble 🤕. I need to terminate. Will be back later.',
+               },
+            },
          };
-         setMessages(prev => [...prev, botSays]);
-      });
-   };
 
-   // const passedParams = () => {
-   //    df_event_query('SAMPLE_RECOMMEND', sampleObject);
-   // };
+         setMessages(prev => [...prev, botSays]);
+      }
+   };
 
    const handleRiasecRecommendation = riasecScores => {
       const sortRiasec = Object.entries(riasecScores).sort(([, a], [, b]) => b - a);
@@ -249,8 +331,7 @@ const Chatbot = () => {
       });
    };
 
-   const handleTermsConditionAgree = () => {
-      handleResolveAfterXSeconds(1);
+   const handleTermsConditionAgree = async () => {
       df_event_query('Welcome');
       setIsAgreeTermsConditions(true);
    };
@@ -278,7 +359,7 @@ const Chatbot = () => {
                </div>
                {/* chatbot messages */}
                <div ref={messagesRef} className='chatbot-messages'>
-                  {/* <button className='btn btn-primary' onClick={() => handleRiasecRecommendation()}>
+                  {/* <button className='btn btn-primary' onClick={() => handleRiasecRecommendation(riasec)}>
                      Identify RIASEC Area
                   </button> */}
 
@@ -355,20 +436,20 @@ const Chatbot = () => {
                </p>
             </div>
 
-            <div></div>
-
-            <div className='form-check m-2'>
-               <input
-                  className='form-check-input'
-                  onChange={() => handleTermsConditionAgree()}
-                  type='checkbox'
-                  value=''
-                  id='terms-conditions-check'
-               />
-               <label className='form-check-label fw-bold' htmlFor='terms-conditions-check'>
-                  I Agree to the Terms and Conditions
-               </label>
-            </div>
+            {!isAgreeTermsConditions && (
+               <div className='form-check m-2'>
+                  <input
+                     className='form-check-input'
+                     onChange={() => handleTermsConditionAgree()}
+                     type='checkbox'
+                     value=''
+                     id='terms-conditions-check'
+                  />
+                  <label className='form-check-label fw-bold' htmlFor='terms-conditions-check'>
+                     I Agree to the Terms and Conditions
+                  </label>
+               </div>
+            )}
 
             <div className='mt-3 float-end'>
                <button className='btn btn-primary' data-bs-dismiss='modal'>

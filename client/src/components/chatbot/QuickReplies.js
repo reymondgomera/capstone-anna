@@ -25,7 +25,7 @@ const QuickReplies = ({ replyClick, speaks, text, payload, messages, setMessages
 
    return (
       <>
-         {/* text replies will now only have quick replies, dont have text */}
+         {/* quick replies will now only have quick replies, dont have text */}
          {/* {text && (
             <div className={`message ${speaks !== 'bot' && 'user'}`}>
                {speaks === 'bot' && (

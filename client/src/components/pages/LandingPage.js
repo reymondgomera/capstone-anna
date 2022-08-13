@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Header from '../Header';
 import anna from '../../assets/Anna_1.svg';
@@ -6,9 +6,12 @@ import brainstrom from '../../assets/brainstorm.svg';
 import reymond from '../../assets/Reymond.svg';
 import ryan from '../../assets/Ryan.svg';
 import john from '../../assets/John.svg';
+import { isEmailValid } from '../../utils/validator';
 import { FaScroll } from 'react-icons/fa';
 import { MdRecommend } from 'react-icons/md';
 import { ChatbotContext } from '../../context/ChatbotContext';
+import { toast } from 'react-toastify';
+import Chatbot from '../chatbot/Chatbot';
 
 const LandingPage = () => {
    const { setShowbot } = useContext(ChatbotContext);
@@ -19,6 +22,40 @@ const LandingPage = () => {
       { text: 'Terms & Conditions', link: '/#terms-conditions' },
       { text: 'Feedback', link: '/#feedback' },
    ];
+
+   const [inputs, setInputs] = useState({ email: '', feedback: '' });
+   const { email, feedback } = inputs;
+
+   const handleInputChange = e => {
+      setInputs({ ...inputs, [e.target.name]: e.target.value });
+   };
+
+   const handleSubmit = async e => {
+      e.preventDefault();
+      e.target.className += ' was-validated';
+
+      try {
+         if (email && feedback) {
+            if (isEmailValid(email)) {
+               const body = { email, feedback };
+               const response = await fetch('/admin/feedback', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(body),
+               });
+               const data = await response.json();
+
+               if (response.status === 200 && data.feedback) {
+                  e.target.classList.remove('was-validated');
+                  setInputs({ email: '', feedback: '' });
+                  toast.success(data.message);
+               } else toast.error(data.message);
+            } else toast.error('Email is invalid!');
+         } else toast.error('Please complete all required fields!');
+      } catch (err) {
+         console.error(err.message);
+      }
+   };
 
    return (
       <>
@@ -166,15 +203,40 @@ const LandingPage = () => {
          <section id='feedback' className='section bg-white py-5'>
             <div className='container d-flex flex-column px-0 '>
                <h1 className='custom-heading my-5 text-center text-primary'>TERMS AND CONDITIONS</h1>
-               <form className='d-flex flex-column justify-content-center align-items-center'>
-                  <input className='form-control mb-4' type='email' id='email' placeholder='Email Addres' />
-                  <textarea className='form-control mb-4' id='feedback' rows='12' placeholder='Tell us how can we improve...'></textarea>
-                  <button className='btn btn-primary rounded-pill px-3' type='button'>
+               <form className='d-flex flex-column justify-content-center align-items-center px-4' noValidate onSubmit={handleSubmit}>
+                  <div className='mb-4 w-100'>
+                     <input
+                        className='form-control'
+                        value={email}
+                        type='email'
+                        id='email'
+                        name='email'
+                        required
+                        placeholder='Email Addres'
+                        onChange={handleInputChange}
+                     />
+                     {!email && <div className='invalid-feedback py-1 px-1'>Email can't be empty</div>}
+                  </div>
+                  <div className='mb-4 w-100'>
+                     <textarea
+                        className='form-control'
+                        value={feedback}
+                        id='feedback'
+                        name='feedback'
+                        required
+                        rows='12'
+                        placeholder='Tell us how can we improve...'
+                        onChange={handleInputChange}
+                     ></textarea>
+                     {!feedback && <div className='invalid-feedback py-1 px-1'>Feedback can't be empty</div>}
+                  </div>
+                  <button className='btn btn-primary rounded-pill px-3' type='submit'>
                      Submit
                   </button>
                </form>
             </div>
          </section>
+         <Chatbot />
 
          <footer className='mt-auto bg-primary p-2 text-center'>ANNA | Copyright © 2022</footer>
       </>
