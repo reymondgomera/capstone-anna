@@ -3,14 +3,17 @@ import { v4 as uuid } from 'uuid';
 import Cookies from 'universal-cookie';
 import { ChatbotContext } from '../../context/ChatbotContext';
 import { MdClose, MdSend } from 'react-icons/md';
+import { FaUserGraduate } from 'react-icons/fa';
 
 import Message from './Message';
 import Card from './Card';
 import chathead from '../../assets/Anna_Chathead.svg';
 import chatloading from '../../assets/chatbot-loading.gif';
 import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
-import Modal from '../Modal';
 import QuickReplies from './QuickReplies';
+import Modal from '../Modal';
+import RecommendedCoursesMessage from './RecommendedCoursesMessage';
+import RecommendedCoursesQuickReply from './RecommendedCoursesQuickReply';
 
 import '../../styles/chatbot.css';
 
@@ -29,13 +32,29 @@ const Chatbot = () => {
       },
    ]);
    const [textMessage, setTextMessage] = useState('');
-   const { isAgreeTermsConditions, setIsAgreeTermsConditions, showBot, setShowbot, disabledInput, botChatLoading, setBotChatLoading } =
-      useContext(ChatbotContext);
+   const {
+      isAgreeTermsConditions,
+      setIsAgreeTermsConditions,
+      showBot,
+      setShowbot,
+      disabledInput,
+      botChatLoading,
+      setBotChatLoading,
+      basis,
+      setIsRecommendationProvided,
+   } = useContext(ChatbotContext);
+
    const messagesRef = useRef(null);
    const [user, setUser] = useState({ name: '', age: '', sex: '', strand: '' });
    const [riasec, setRiasec] = useState({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+   const [riasecCode, setRiasecCode] = useState([]);
    const [fallbackCount, setFallbackCount] = useState({});
    const [endConversation, setEndConversation] = useState(false);
+
+   // recommeded courses
+   const [knownCourses, setKnownCourses] = useState([]);
+   const [riasecBasedRecommendedCourses, setRiasecBasedRecommendedCourses] = useState([]);
+   const [strandBasedRecommendedCourses, setStrandBasedRecommendedCourses] = useState([]);
 
    // if cookies does not exist set cookies else do nothing, cookies path = '/ - accessible to all pages
    if (!cookies.get('userId')) cookies.set('userId', uuid(), { path: '/' });
@@ -90,8 +109,8 @@ const Chatbot = () => {
                else setFallbackCount(prev => ({ ...prev, [intentName]: prev[`${intentName}`] + 1 }));
             }
 
-            // get parameters data and set it to state
             if (data.parameters.fields) {
+               // get parameters data and set it to state
                const fields = data.parameters.fields;
                if (fields.name) setUser(prev => ({ ...prev, name: fields.name.stringValue }));
                else if (fields.age) setUser(prev => ({ ...prev, age: fields.age.numberValue }));
@@ -147,15 +166,19 @@ const Chatbot = () => {
                      break;
                }
             }
-
             if (msg.payload && msg.payload.fields && !msg.payload.fields.riasec && msg.payload.fields.riasec_last_question) {
                // trigger recommendation after last question and answer was "no"
                handleRiasecRecommendation(riasec);
+            }
+            if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
+               df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
+               setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
             }
          });
       } catch (err) {
          console.log(err.message);
 
+         setBotChatLoading(false);
          const botSays = {
             speaks: 'bot',
             msg: {
@@ -183,7 +206,7 @@ const Chatbot = () => {
          console.dir(data);
 
          //clear all state when welcome intent trigger
-         if (data.intent.displayName === 'Default Welcome Intent') {
+         if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
             setUser({ name: '', age: '', sex: '', strand: '' });
             setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
             setEndConversation(false);
@@ -196,10 +219,21 @@ const Chatbot = () => {
                msg: msg,
             };
             setMessages(prev => [...prev, botSays]);
+
+            // trigger something based on the payload sent by dialogflow
+            if (msg.payload && msg.payload.fields && msg.payload.fields.riasec_recommended_courses) {
+               const recommendedCourses = msg.payload.fields.riasec_recommended_courses.listValue.values;
+               setRiasecBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
+            }
+            if (msg.payload && msg.payload.fields && msg.payload.fields.strand_recommended_courses) {
+               const recommendedCourses = msg.payload.fields.strand_recommended_courses.listValue.values;
+               setStrandBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
+            }
          });
       } catch (err) {
          console.log(err.message);
 
+         setBotChatLoading(false);
          const botSays = {
             speaks: 'bot',
             msg: {
@@ -234,7 +268,29 @@ const Chatbot = () => {
 
       console.log('RIASEC CODE = ', RIASEC_CODE);
 
+      setRiasecCode(RIASEC_CODE);
       df_event_query('RIASEC_RECOMMENDATION', RIASEC_CODE);
+      setIsRecommendationProvided(prev => ({ ...prev, riasec: 'done' }));
+   };
+
+   const handleRecommendedCourseClick = course => {
+      const allMessages = messages;
+      let userSays = {
+         speaks: 'user',
+         msg: {
+            text: {
+               text: course,
+            },
+         },
+      };
+
+      // remove quick reply message
+      messages.pop();
+      setMessages([...allMessages, userSays]);
+      if (!knownCourses.includes(course)) setKnownCourses(prev => [...prev, course]);
+
+      if (basis === 'riasec') df_event_query('GET_RIASEC_RECOMMENDATION_COURSE_INFO', { course_to_lookup: course });
+      else if (basis === 'strand') df_event_query('GET_STRAND_RECOMMENDATION_COURSE_INFO', { course_to_lookup: course });
    };
 
    const renderCards = cards => {
@@ -257,6 +313,21 @@ const Chatbot = () => {
                </div>
             </div>
          );
+      } else if (
+         message.msg &&
+         message.msg.payload &&
+         message.msg.payload.fields &&
+         message.msg.payload.fields.quick_replies &&
+         message.msg.payload.fields.basis &&
+         message.msg.payload.fields.recommended_courses_info
+      ) {
+         return (
+            <RecommendedCoursesQuickReply
+               key={i}
+               payload={message.msg.payload.fields.quick_replies.listValue.values}
+               basis={message.msg.payload.fields.basis.stringValue}
+            />
+         );
       } else if (message.msg && message.msg.payload && message.msg.payload.fields && message.msg.payload.fields.quick_replies) {
          return (
             <QuickReplies
@@ -264,8 +335,30 @@ const Chatbot = () => {
                messages={messages}
                setMessages={setMessages}
                replyClick={handleQuickReplyPayload}
-               speaks={message.speaks}
                payload={message.msg.payload.fields.quick_replies.listValue.values}
+            />
+         );
+      } else if (
+         message.msg &&
+         message.msg.payload &&
+         message.msg.payload.fields &&
+         message.msg.payload.fields.basis &&
+         (message.msg.payload.fields.riasec_recommended_courses || message.msg.payload.fields.strand_recommended_courses)
+      ) {
+         return (
+            <RecommendedCoursesMessage
+               key={i}
+               speaks={message.speaks}
+               isRecommendationProvided
+               handleMessagesScrollToBottom={handleMessagesScrollToBottom}
+               dialogflowEventQuery={df_event_query}
+               strand={user.strand}
+               basis={message.msg.payload.fields.basis.stringValue}
+               recommendedCourses={
+                  message.msg.payload.fields.basis.stringValue === 'riasec'
+                     ? message.msg.payload.fields.riasec_recommended_courses.listValue.values
+                     : message.msg.payload.fields.strand_recommended_courses.listValue.values
+               }
             />
          );
       }
@@ -317,6 +410,26 @@ const Chatbot = () => {
             df_event_query('RIASEC_START');
             break;
 
+         case 'ISLEARN_RIASEC_RECOMMENDED_COURSES_YES':
+            setMessages(prev => [...prev, humanSays]);
+            df_event_query('ISLEARN_RIASEC_RECOMMENDED_COURSES_YES');
+            break;
+
+         case 'ISWANT_STRAND_RECOMMENDATION':
+            setMessages(prev => [...prev, humanSays]);
+            df_event_query('ISWANT_STRAND_RECOMMENDATION');
+            break;
+
+         case 'ISLEARN_STRAND_RECOMMENDED_COURSES_YES':
+            setMessages(prev => [...prev, humanSays]);
+            df_event_query('ISLEARN_STRAND_RECOMMENDED_COURSES_YES');
+            break;
+
+         case 'END_CONVERSATION':
+            setMessages(prev => [...prev, humanSays]);
+            df_event_query('END_CONVERSATION');
+            break;
+
          default:
             df_text_query(text);
             break;
@@ -324,8 +437,10 @@ const Chatbot = () => {
    };
 
    const handleResolveAfterXSeconds = x => {
+      setBotChatLoading(true);
       return new Promise(resolve => {
          setTimeout(() => {
+            setBotChatLoading(false);
             resolve(x);
          }, x * 1000);
       });
@@ -455,6 +570,40 @@ const Chatbot = () => {
                <button className='btn btn-primary' data-bs-dismiss='modal'>
                   Close
                </button>
+            </div>
+         </Modal>
+
+         <Modal
+            title={`${basis === 'riasec' ? 'RIASEC' : 'Strand'} | Recommended Degree Programs`}
+            target='modal-recommended-courses-info'
+            size='modal-lg'
+         >
+            <div className='d-flex flex-column'>
+               {basis === 'riasec'
+                  ? riasecBasedRecommendedCourses.length > 0 &&
+                    riasecBasedRecommendedCourses.map((course, i) => (
+                       <div
+                          key={i}
+                          className={`course-recommendation border-bottom ${knownCourses.includes(course) ? 'active' : ''} `}
+                          data-bs-dismiss='modal'
+                          onClick={() => handleRecommendedCourseClick(course)}
+                       >
+                          <FaUserGraduate className='me-2' />
+                          <span>{course}</span>
+                       </div>
+                    ))
+                  : strandBasedRecommendedCourses.length > 0 &&
+                    strandBasedRecommendedCourses.map((course, i) => (
+                       <div
+                          key={i}
+                          className={`course-recommendation border-bottom ${knownCourses.includes(course) ? 'active' : ''} `}
+                          data-bs-dismiss='modal'
+                          onClick={() => handleRecommendedCourseClick(course)}
+                       >
+                          <FaUserGraduate className='me-2' />
+                          <span>{course}</span>
+                       </div>
+                    ))}
             </div>
          </Modal>
       </>

@@ -45,13 +45,18 @@
 
 /* admin sidebar */
 .sidebar {
-   min-height: 100vh;
-   width: 230px;
+   height: 100vh;
+   width: 220px;
    top: 0;
    bottom: 0;
-   padding: 24px;
+   padding: 10px 13px;
+   transition: 0.4s;
    background-color: var(--primary);
 }
+.sidebar.active {
+   width: 70px;
+}
+
 .sidebar-links {
    padding: 0;
    white-space: normal;
@@ -60,12 +65,17 @@
 }
 .sidebar-link {
    display: flex;
+   align-items: center;
    font-weight: bold;
    padding: 8px;
    cursor: pointer;
    text-decoration: none;
    color: var(--black);
 }
+.sidebar-link span {
+   font-size: 0.9rem !important;
+}
+
 .sidebar-link:hover,
 .sidebar-link.active {
    color: var(--white);

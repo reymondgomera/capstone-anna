@@ -17,9 +17,12 @@ import Conversation from './components/pages/Conversation';
 function App() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
    const [isAgreeTermsConditions, setIsAgreeTermsConditions] = useState(false);
-   const [showBot, setShowbot] = useState(false);
+   const [showBot, setShowbot] = useState(true);
    const [disabledInput, setDisabledInput] = useState(false);
    const [botChatLoading, setBotChatLoading] = useState(false);
+   const [isSidebarActive, setIsSidebarActive] = useState(false);
+   const [isRecommendationProvided, setIsRecommendationProvided] = useState({ riasec: '', strand: '' });
+   const [basis, setBasis] = useState('');
 
    const varify = async () => {
       try {
@@ -44,11 +47,17 @@ function App() {
       setDisabledInput,
       botChatLoading,
       setBotChatLoading,
+      isRecommendationProvided,
+      setIsRecommendationProvided,
+      basis,
+      setBasis,
    };
 
    const UserContextValue = {
       isAuthenticated,
       setIsAuthenticated,
+      isSidebarActive,
+      setIsSidebarActive,
    };
 
    return (

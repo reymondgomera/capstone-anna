@@ -1,7 +1,7 @@
 /* chatbot */
 .chatbot {
    height: 465px;
-   width: 500px;
+   width: 510px;
    position: fixed;
    bottom: 14%;
    right: 1%;
@@ -79,7 +79,7 @@
 .message-text {
    font-size: 0.9rem;
    border-radius: 8px;
-   padding: 5px 10px;
+   padding: 10px;
 }
 .message-avatar {
    margin-right: 10px;
@@ -95,11 +95,21 @@
    background-color: var(--primary);
 }
 .message-text-link {
-   font-size: 0.85rem !important;
+   font-size: inherit;
 }
 .message-text-link:active,
 .message-text-link:focus {
    box-shadow: none !important;
+}
+
+/* recommended courses list */
+.recommendedCourses {
+   padding-left: 35px;
+   font-size: 0.9rem !important;
+   margin: 0;
+}
+.recommendedCourses > li {
+   font-size: inherit;
 }
 
 /* card */
@@ -155,4 +165,24 @@
 
 .message-quick-reply-btn {
    font-size: 0.9rem;
+}
+
+.course-recommendation {
+   padding: 12px 15px;
+   cursor: pointer;
+}
+.course-recommendation span {
+   font-size: 0.95rem;
+}
+
+.course-recommendation:hover {
+   color: var(--primary);
+   border-bottom: solid 1px var(--primary) !important;
+}
+
+.course-recommendation.active {
+   border-bottom: none !important;
+   border-top: none !important;
+   border-right: none !important;
+   border-left: solid 3px var(--primary) !important;
 }

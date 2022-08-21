@@ -1,0 +1,29 @@
+.rdt_Table * {
+   font-size: 0.9rem !important;
+}
+
+.rdt_TableHeadRow {
+   color: var(--white) !important;
+   background-color: var(--primary) !important;
+}
+.rdt_TableCol {
+   border-collapse: collapse !important;
+   color: var(--white) !important;
+   background-color: var(--primary) !important;
+}
+
+/* actions button */
+.actions-btn {
+   cursor: pointer;
+   font-size: 20px !important;
+   width: 20px !important;
+   color: var(--black) !important;
+}
+.actions-btn:hover {
+   color: var(--primary) !important;
+}
+
+/* modals */
+.rdt_Table .modal {
+   font-size: 1rem !important;
+}

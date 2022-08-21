@@ -2,13 +2,13 @@ import QuickReply from './QuickReply';
 import { ChatbotContext } from '../../context/ChatbotContext';
 import { useContext } from 'react';
 
-const QuickReplies = ({ replyClick, speaks, text, payload, messages, setMessages }) => {
+const QuickReplies = ({ replyClick, payload, messages, setMessages }) => {
    const { setDisabledInput } = useContext(ChatbotContext);
 
-   const removeQuickRepliesAfterClick = (messages, setMessage) => {
+   const removeQuickRepliesAfterClick = (messages, setMessages) => {
       const allMessages = messages;
       messages.pop();
-      setMessage(allMessages);
+      setMessages(allMessages);
    };
 
    const handleClick = (e, payload, text) => {
