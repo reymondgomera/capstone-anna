@@ -6,7 +6,12 @@ const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// db connect
 mongoose.connect(config.mongo_URI, { useNewUrlParser: true });
+mongoose.connection.on('connected', () => console.log('Connected to MongoDB database successfully'));
+mongoose.connection.on('error', () => console.log('Error while connecting to MongoDB database: ' + err));
+mongoose.connection.on('disconnected', () => console.log('MongoDB connection disconnected'));
 
 app.use(cors());
 app.use(express.json());
