@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 5000;
 // db connect
 mongoose.connect(config.mongo_URI, { useNewUrlParser: true });
 mongoose.connection.on('connected', () => console.log('Connected to MongoDB database successfully'));
-mongoose.connection.on('error', () => console.log('Error while connecting to MongoDB database: ' + err));
 mongoose.connection.on('disconnected', () => console.log('MongoDB connection disconnected'));
+mongoose.connection.on('error', err => console.log('Error while connecting to MongoDB database: ' + err));
 
 app.use(cors());
 app.use(express.json());
@@ -20,6 +20,7 @@ app.use(morgan('dev'));
 
 app.use('/auth', require('./routes/authenticationRoutes'));
 app.use('/admin', require('./routes/adminRoutes'));
+app.use('/user', require('./routes/UserRoutes'));
 require('./routes/dialogflowRoutes')(app); // (app) added at the end, to allow app to be accessible in dialogflowRoutes
 require('./routes/fullfillmentRoutes')(app);
 
