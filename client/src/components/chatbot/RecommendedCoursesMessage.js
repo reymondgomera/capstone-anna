@@ -5,9 +5,17 @@ import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
 import chatloading from '../../assets/chatbot-loading.gif';
 import { ChatbotContext } from '../../context/ChatbotContext';
 
-const RecommendedCoursesMessage = ({ speaks, recommendedCourses, handleMessagesScrollToBottom, dialogflowEventQuery, basis, strand }) => {
+const RecommendedCoursesMessage = ({
+   speaks,
+   recommendedCourses,
+   handleMessagesScrollToBottom,
+   dialogflowEventQuery,
+   setTextMessage,
+   basis,
+   strand,
+}) => {
    const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
-   const { isRecommendationProvided, setIsRecommendationProvided } = useContext(ChatbotContext);
+   const { isRecommendationProvided, setIsRecommendationProvided, setDisabledInput } = useContext(ChatbotContext);
    const introductoryText = {
       riasec:
          'With your interest identified, I will show you degree programs that will be suitable for you to take in college. Allow me to show you these courses:',
@@ -19,8 +27,11 @@ const RecommendedCoursesMessage = ({ speaks, recommendedCourses, handleMessagesS
       if (isRecommendationProvided.riasec === 'done') {
          // only trigger once
          setIsRecommendationLoading(true);
+         setDisabledInput(true);
+         setTextMessage('');
          setTimeout(() => {
             setIsRecommendationLoading(false);
+            setDisabledInput(false);
             setIsRecommendationProvided(prev => ({ ...prev, riasec: '' })); // empty so that it will not be trigger again
             handleMessagesScrollToBottom();
             dialogflowEventQuery('ISLEARN_RIASEC_RECOMMENDED_COURSES');
@@ -28,12 +39,15 @@ const RecommendedCoursesMessage = ({ speaks, recommendedCourses, handleMessagesS
       } else if (isRecommendationProvided.strand === 'done') {
          // only trigger once
          setIsRecommendationLoading(true);
+         setDisabledInput(true);
+         setTextMessage('');
          setTimeout(() => {
             setIsRecommendationLoading(false);
+            setDisabledInput(false);
             setIsRecommendationProvided(prev => ({ ...prev, strand: '' })); // empty so that it will not be trigger again
             handleMessagesScrollToBottom();
             dialogflowEventQuery('ISLEARN_STRAND_RECOMMENDED_COURSES');
-         }, 7000); //2000 for testing only  // must be change 15000
+         }, 15000); //2000 for testing only  // must be change 15000
       }
    }, []);
 

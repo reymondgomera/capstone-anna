@@ -13,8 +13,8 @@ const ContentNavbar = () => {
    };
 
    return (
-      <div className='d-flex pt-2 align-items-center'>
-         <button className='btn btn-primary p-1 me-auto' onClick={() => setIsSidebarActive(prev => !prev)}>
+      <div className='d-flex justify-content-between pt-2 align-items-center'>
+         <button className='btn btn-primary p-1' onClick={() => setIsSidebarActive(prev => !prev)}>
             <MdMenu className='icon-small' />
          </button>
          <div>

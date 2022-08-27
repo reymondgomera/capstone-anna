@@ -24,6 +24,6 @@
 }
 
 /* modals */
-.rdt_Table .modal {
-   font-size: 1rem !important;
+.rdt_Table .modal-title {
+   font-size: 1.25rem !important;
 }

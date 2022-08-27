@@ -14,6 +14,7 @@ import QuickReplies from './QuickReplies';
 import Modal from '../Modal';
 import RecommendedCoursesMessage from './RecommendedCoursesMessage';
 import RecommendedCoursesQuickReply from './RecommendedCoursesQuickReply';
+import { titleCase } from '../../utils/utilityFunctions';
 
 import '../../styles/chatbot.css';
 
@@ -41,6 +42,7 @@ const Chatbot = () => {
       botChatLoading,
       setBotChatLoading,
       basis,
+      setBasis,
       setIsRecommendationProvided,
    } = useContext(ChatbotContext);
 
@@ -87,10 +89,7 @@ const Chatbot = () => {
 
          if (data) {
             if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
-               setEndConversation(false);
-               setFallbackCount({});
-               setUser({ name: '', age: '', sex: '', strand: '' });
-               setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+               clearState();
             } else if (endConversation) {
                // trigger if the conversation was ended because of fallback exceed trigger limit
                df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
@@ -100,11 +99,12 @@ const Chatbot = () => {
                if (fallbackCount[`${intentName}`] >= 5) {
                   console.log('fallbackCount = ', fallbackCount[`${intentName}`]);
                   df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
+                  clearState();
                   setEndConversation(true);
                   return;
                }
 
-               // object intent name does not exist assign 1 if exisit just increment by 1
+               // object intent name does not exist assign 1 else if exisit just increment by 1
                if (!fallbackCount[`${intentName}`]) setFallbackCount(prev => ({ ...prev, [intentName]: 1 }));
                else setFallbackCount(prev => ({ ...prev, [intentName]: prev[`${intentName}`] + 1 }));
             }
@@ -207,10 +207,7 @@ const Chatbot = () => {
 
          //clear all state when welcome intent trigger
          if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
-            setUser({ name: '', age: '', sex: '', strand: '' });
-            setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
-            setEndConversation(false);
-            setFallbackCount({});
+            clearState();
          }
 
          data.fulfillmentMessages.forEach(async msg => {
@@ -221,6 +218,14 @@ const Chatbot = () => {
             setMessages(prev => [...prev, botSays]);
 
             // trigger something based on the payload sent by dialogflow
+            if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
+               df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
+               setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
+            }
+            if (msg.payload && msg.payload.fields && msg.payload.fields.no_riasec_recommended_courses) {
+               // trigger only when no riasec recommendation
+               setIsRecommendationProvided(prev => ({ ...prev, riasec: '' }));
+            }
             if (msg.payload && msg.payload.fields && msg.payload.fields.riasec_recommended_courses) {
                const recommendedCourses = msg.payload.fields.riasec_recommended_courses.listValue.values;
                setRiasecBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
@@ -228,6 +233,10 @@ const Chatbot = () => {
             if (msg.payload && msg.payload.fields && msg.payload.fields.strand_recommended_courses) {
                const recommendedCourses = msg.payload.fields.strand_recommended_courses.listValue.values;
                setStrandBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
+            }
+            if (msg.payload && msg.payload.fields && msg.payload.fields.end_conversation) {
+               savedConversation(user, riasecCode, riasecBasedRecommendedCourses, strandBasedRecommendedCourses);
+               clearState();
             }
          });
       } catch (err) {
@@ -245,6 +254,19 @@ const Chatbot = () => {
 
          setMessages(prev => [...prev, botSays]);
       }
+   };
+
+   const clearState = () => {
+      setUser({ name: '', age: '', sex: '', strand: '' });
+      setRiasec({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
+      setRiasecCode([]);
+      setKnownCourses([]);
+      setRiasecBasedRecommendedCourses([]);
+      setStrandBasedRecommendedCourses([]);
+      setFallbackCount({});
+      setEndConversation(false);
+      setBasis('');
+      setIsRecommendationProvided({ riasec: '', strand: '' });
    };
 
    const handleRiasecRecommendation = riasecScores => {
@@ -271,6 +293,7 @@ const Chatbot = () => {
       setRiasecCode(RIASEC_CODE);
       df_event_query('RIASEC_RECOMMENDATION', RIASEC_CODE);
       setIsRecommendationProvided(prev => ({ ...prev, riasec: 'done' }));
+      // fetchCoursesByStrand();
    };
 
    const handleRecommendedCourseClick = course => {
@@ -291,6 +314,30 @@ const Chatbot = () => {
 
       if (basis === 'riasec') df_event_query('GET_RIASEC_RECOMMENDATION_COURSE_INFO', { course_to_lookup: course });
       else if (basis === 'strand') df_event_query('GET_STRAND_RECOMMENDATION_COURSE_INFO', { course_to_lookup: course });
+   };
+
+   const savedConversation = async (user, riasecCode, riasecCourses, strandCourses) => {
+      try {
+         const body = {
+            name: titleCase(user.name),
+            age: user.age,
+            sex: user.sex,
+            strand: user.strand,
+            riasec_code: riasecCode,
+            riasec_course_recommendation: riasecCourses,
+            strand_course_recommendation: strandCourses,
+         };
+
+         const response = await fetch('/user/conversation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+         });
+         const data = await response.json();
+         if (response.status === 200) console.log(data.message);
+      } catch (err) {
+         console.error(err.message);
+      }
    };
 
    const renderCards = cards => {
@@ -352,6 +399,7 @@ const Chatbot = () => {
                isRecommendationProvided
                handleMessagesScrollToBottom={handleMessagesScrollToBottom}
                dialogflowEventQuery={df_event_query}
+               setTextMessage={setTextMessage}
                strand={user.strand}
                basis={message.msg.payload.fields.basis.stringValue}
                recommendedCourses={
@@ -450,6 +498,17 @@ const Chatbot = () => {
       df_event_query('Welcome');
       setIsAgreeTermsConditions(true);
    };
+
+   // const fetchCoursesByStrand = async () => {
+   //    try {
+   //       const response = await fetch(`/user/courses-by-strand/${user.strand}`);
+   //       const data = await response.json();
+   //       console.log(data);
+   //       if (response.status === 200) setStrandBasedRecommendedCourses(data.courses);
+   //    } catch (err) {
+   //       console.error(err.message);
+   //    }
+   // };
 
    useEffect(() => {
       handleMessagesScrollToBottom();

@@ -73,7 +73,7 @@
    color: var(--black);
 }
 .sidebar-link span {
-   font-size: 0.9rem !important;
+   font-size: 0.95rem !important;
 }
 
 .sidebar-link:hover,
@@ -84,6 +84,8 @@
 /* admin content */
 .admin-contents {
    width: 100%;
+   max-height: 100vh !important;
+   overflow-y: auto !important;
 }
 
 /* media quiries */

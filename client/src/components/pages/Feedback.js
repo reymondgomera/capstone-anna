@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import DataTableBase from '../DataTableBase';
 import moment from 'moment';
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
-import '../../styles/datatablebase.css';
 
+import DataTableBase from '../DataTableBase';
 import ContentNavbar from './ContentNavbar';
 import Modal from '../Modal';
+import '../../styles/datatablebase.css';
 
 const Feedback = () => {
    const [feedbacks, setFeedbacks] = useState([]);
-   const [filteredFeedbacks, setFilteredFeedbacks] = useState([]);
    const [searchKey, setSearchKey] = useState('');
 
    const [isLoading, setisLoading] = useState(false);
@@ -30,19 +29,8 @@ const Feedback = () => {
       try {
          setisLoading(true);
 
-         let sortValue = '';
-         switch (column.name) {
-            case 'Date':
-               sortValue = 'createdAt';
-               break;
-            case 'Email':
-               sortValue = 'email';
-            default:
-               break;
-         }
-
          const response = await fetch(
-            `/admin/feedbacks?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${sortValue}&order=${sortDirection}`,
+            `/admin/feedbacks?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -52,7 +40,7 @@ const Feedback = () => {
          if (response.status === 200) {
             setFeedbacks(data.feedbacks);
             setTotalRows(data.total);
-            setSort(sortValue);
+            setSort(column.sortField);
             setOrder(sortDirection);
             setResetPaginationToggle(prev => !prev);
             setisLoading(false);
@@ -109,12 +97,14 @@ const Feedback = () => {
          selector: row => row.createdAt,
          format: row => moment(row.createdAt).format('L'),
          sortable: true,
+         sortField: 'createdAt',
          maxWidth: '10vw',
       },
       {
          name: 'Email',
          selector: row => row.email,
          sortable: true,
+         sortField: 'email',
          maxWidth: '20vw',
       },
       {
@@ -140,10 +130,6 @@ const Feedback = () => {
       },
    ];
 
-   useEffect(() => {
-      fetchFeedbacks(1);
-   }, []);
-
    const Loading = () => {
       return (
          <div className='p-5'>
@@ -152,11 +138,16 @@ const Feedback = () => {
       );
    };
 
+   useEffect(() => {
+      fetchFeedbacks(1);
+   }, []);
+
    return (
       <div className='admin-contents px-4 pb-4'>
          <ContentNavbar />
          <div>
-            <form className='mt-4 mb-3' onSubmit={search} style={{ width: '38%' }}>
+            <h1 className='h3 custom-heading mt-3 mb-2'>Feedback</h1>
+            <form className='mb-3' onSubmit={search} style={{ width: '38%' }}>
                <div className='input-group flex-nowrap'>
                   <input
                      className='form-control'
