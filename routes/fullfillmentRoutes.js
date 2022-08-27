@@ -104,13 +104,8 @@ module.exports = app => {
          console.log(parameters['2'][0], ' = ', parameters['2'][1]);
 
          if (!parameters['0'][1] && !parameters['1'][1] && !parameters['2'][1]) {
-            // student does not have any interest among those questions whtih riasec scores is all zero (0)
-            agent.add(
-               `It looks like you didn't have any interest in the things that I had asked you. 
-                Unfortunately 😓, because of that, I can't recommend you any degree programs at the moment. 
-                Instead, I can show you my recommendation based on your senior high school strand 😊.`
-            );
-            // trigger intent to show recommendation based on strand
+            agent.add(' ');
+            agent.setFollowupEvent('NO_RIASEC_RECOMMENDED_COURSES');
          } else {
             // if riasec scores are not all zero
             const riasecAreas = {
@@ -123,37 +118,49 @@ module.exports = app => {
             };
 
             const riasecAreasIdentify = `
-            Now. I already know the things you are interested in. You are ${getAandAn(parameters['0'][0])} “${capitalizeFirstLetter(
-               parameters['0'][0]
-            )}”, “${capitalizeFirstLetter(parameters['1'][0])}” and “${capitalizeFirstLetter(parameters['2'][0])}” person.`;
+            Now. I already know the things you are interested in. You are ${getAandAn(parameters['0'][0])} 
+            “${capitalizeFirstLetter(parameters['0'][0])}” ${!parameters['1'][1] && !parameters['2'][1] ? ' person.' : ''} 
+            ${parameters['0'][1] && parameters['1'][1] && !parameters['2'][1] ? ' and ' : ''} ${parameters['2'][1] ? ' ,' : ''}
+            ${parameters['1'][1] ? `“${capitalizeFirstLetter(parameters['1'][0])}”${parameters['2'][1] ? ' and ' : ' person.'}` : ''} 
+            ${parameters['2'][1] ? `“${capitalizeFirstLetter(parameters['2'][0])}” person.` : ''}`;
 
             const riasecAreasDescription = `
             You’re ${getAandAn(parameters['0'][0])} "${capitalizeFirstLetter(parameters['0'][0])}" person ${riasecAreas[parameters['0'][0]]} 
-            You’re also ${getAandAn(parameters['1'][0])} "${capitalizeFirstLetter(parameters['1'][0])}" person, ${riasecAreas[parameters['1'][0]]} 
-            Lastly, I found out that your are ${getAandAn(parameters['2'][0])} "${capitalizeFirstLetter(parameters['2'][0])}" person, ${
-               riasecAreas[parameters['2'][0]]
+            ${parameters['1'][1] && parameters['2'][1] ? "You're also" : ''} 
+            ${parameters['1'][1] && !parameters['2'][1] ? 'Lastly, I found out that your are' : ''}
+            ${
+               parameters['1'][1]
+                  ? `${getAandAn(parameters['1'][0])} "${capitalizeFirstLetter(parameters['1'][0])}" person, ${riasecAreas[parameters['1'][0]]}`
+                  : ''
+            } 
+            ${
+               parameters['2'][1]
+                  ? `Lastly, I found out that your are ${getAandAn(parameters['2'][0])} "${capitalizeFirstLetter(parameters['2'][0])}" person, ${
+                       riasecAreas[parameters['2'][0]]
+                    }`
+                  : ''
             }`;
 
             const riasec1 = parameters['0'][0].toUpperCase(); // highest score riasec area
             const riasec2 = parameters['1'][0].toUpperCase(); // second or same with higest
             const riasec3 = parameters['2'][0].toUpperCase(); // third or same with higest
-            const toFilterCourse = [parameters['0'][0].toUpperCase()];
+            const toFilterRiasecArea = [parameters['0'][0].toUpperCase()];
             const payload = { basis: 'riasec' };
 
             console.log('\n1.', riasec1);
             console.log('2.', riasec2);
             console.log('3.', riasec3);
 
-            // Add into the toFilterCourse the riasec area that is euqal to the highest score riasec area
-            // value of toFilterCourse are the riasec area
-            if (parameters['0'][1] === parameters['1'][1]) toFilterCourse.push(riasec2);
-            if (parameters['0'][1] === parameters['2'][1]) toFilterCourse.push(riasec3);
+            // Add into the toFilterRiasecArea the riasec area that is euqal to the highest score riasec area
+            // value of toFilterRiasecArea are the riasec area
+            if (parameters['0'][1] === parameters['1'][1]) toFilterRiasecArea.push(riasec2);
+            if (parameters['0'][1] === parameters['2'][1]) toFilterRiasecArea.push(riasec3);
 
-            console.log('filterObject = ', toFilterCourse);
+            console.log('filterObject = ', toFilterRiasecArea);
 
-            // fetch courses or degree program based on toFilterCourse
+            // fetch courses or degree program based on toFilterRiasecArea
             try {
-               const riasecBasedRecommendedCourses = await Course.find({ riasec_area: { $in: toFilterCourse } }).sort({ name: 'asc' });
+               const riasecBasedRecommendedCourses = await Course.find({ riasec_area: { $in: toFilterRiasecArea } }).sort({ name: 'asc' });
                const riasecBasedRecommendedCoursesNames = riasecBasedRecommendedCourses.map(course => course.name);
                payload.riasec_recommended_courses = riasecBasedRecommendedCoursesNames;
             } catch (err) {
@@ -177,7 +184,6 @@ module.exports = app => {
          try {
             const strandBasedRecommendedCourses = await Course.find({ strand: { $in: toFilterStrand } }).sort({ name: 'asc' });
             const strandBasedRecommendedCoursesNames = strandBasedRecommendedCourses.map(course => course.name);
-            console.log('strandBasedRecommendedCourses = ', strandBasedRecommendedCourses);
             payload.strand_recommended_courses = strandBasedRecommendedCoursesNames;
          } catch (err) {
             console.error(err.message);
@@ -251,6 +257,19 @@ module.exports = app => {
          }
       };
 
+      const handleEndConversation = agent => {
+         const contexts = agent.contexts;
+         const payload = { end_conversation: true };
+
+         // clear all context by setting lifespan to zero (0)
+         contexts.forEach(context => {
+            agent.setContext({ name: context.name, lifespan: 0 });
+         });
+
+         agent.consoleMessages.forEach(message => agent.add(message));
+         agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
+      };
+
       const checkUncertainty = agent => {
          // idea: assign this function to question-qustion-<number>-yes question-qustion-<number>-no question-qustion-<number>-fallback
          // idea: to check if their answer is cotains uncertain words or dont have idea then trigger intent for uncertain then set the context same as fallback to go back
@@ -283,6 +302,7 @@ module.exports = app => {
       intentMap.set('fallback-exceed-trigger-limit', handleFallbackExceedTriggerLimit);
       intentMap.set('get-riasec-recommendation-course-info', handleGetRiasecRecommendationCourseInfo);
       intentMap.set('get-strand-recommendation-course-info', handleGetStrandRecommendationCourseInfo);
+      intentMap.set('end-conversation', handleEndConversation);
 
       // intentMap.set('riasec-start-fallback', checkUncertainty);
       agent.handleRequest(intentMap);
