@@ -28,7 +28,7 @@
       "concurrently": "^7.3.0"
    },
    "engines": {
-      "node": "15.x",
+      "node": "16.x",
       "npm": "7.x"
    }
 }

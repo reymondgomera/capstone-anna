@@ -24,4 +24,15 @@ app.use('/user', require('./routes/UserRoutes'));
 require('./routes/dialogflowRoutes')(app); // (app) added at the end, to allow app to be accessible in dialogflowRoutes
 require('./routes/fullfillmentRoutes')(app);
 
+if (process.env.NODE_ENV === 'production') {
+   // js and css files
+   // client/build will be our static folder and this will be serve by our server
+   app.use(express.static('client/build'));
+
+   // index.html for for all page routes
+   app.get('*', (req, res) => {
+      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+   });
+}
+
 app.listen(PORT, () => console.log(`Server is running at ${PORT}`));
