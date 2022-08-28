@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 mongoose.connect(config.mongo_URI, { useNewUrlParser: true });
 mongoose.connection.on('connected', () => console.log('Connected to MongoDB database successfully'));
 mongoose.connection.on('disconnected', () => console.log('MongoDB connection disconnected'));
-mongoose.connection.on('error', err => console.log('Error while connecting to MongoDB database: ' + err));
+mongoose.connection.on('error', err => console.log('Error while connecting to MongoDB database: ' + err.message));
 
 app.use(cors());
 app.use(express.json());
@@ -27,7 +28,7 @@ require('./routes/fullfillmentRoutes')(app);
 if (process.env.NODE_ENV === 'production') {
    // js and css files
    // client/build will be our static folder and this will be serve by our server
-   app.use(express.static('client/build'));
+   app.use(express.static(path.resolve(__dirname, 'client', 'build')));
 
    // index.html for for all page routes
    app.get('*', (req, res) => {
