@@ -328,7 +328,7 @@ const Chatbot = () => {
             strand_course_recommendation: strandCourses,
          };
 
-         const response = await fetch('/user/conversation', {
+         const response = await fetch('/user/conversations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),

@@ -2,7 +2,7 @@ const Feedback = require('../models/Feedback');
 const Course = require('../models/Course');
 const Conversation = require('../models/Conversation');
 
-const admin_addFeedback_post = async (req, res) => {
+const admin_addFeedbacks_post = async (req, res) => {
    try {
       const { email, feedback } = req.body;
       const newFeedback = new Feedback({ email, feedback });
@@ -43,7 +43,7 @@ const admin_getFeedbacks_get = async (req, res) => {
    }
 };
 
-const admin_addCourse_post = async (req, res) => {
+const admin_addCourses_post = async (req, res) => {
    try {
       const { name, description, riasec_area, strand } = req.body;
       const newCourse = new Course({ name, description, riasec_area, strand });
@@ -94,7 +94,7 @@ const admin_getConversations_get = async (req, res) => {
    }
 };
 
-const admin_getConversation_get = async (req, res) => {
+const admin_getConversationsById_get = async (req, res) => {
    try {
       const { conversationId } = req.params;
       const conversation = await Conversation.findById(conversationId);
@@ -108,8 +108,8 @@ const admin_getConversation_get = async (req, res) => {
 module.exports = {
    admin_getFeedbacks_get,
    admin_getCourses_get,
-   admin_addFeedback_post,
-   admin_addCourse_post,
+   admin_addFeedbacks_post,
+   admin_addCourses_post,
    admin_getConversations_get,
-   admin_getConversation_get,
+   admin_getConversationsById_get,
 };

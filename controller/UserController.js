@@ -1,7 +1,7 @@
 const Conversation = require('../models/Conversation');
 const Course = require('../models/Course');
 
-const user_addConversation_post = async (req, res) => {
+const user_addConversations_post = async (req, res) => {
    try {
       const { name, age, sex, strand, riasec_code, riasec_course_recommendation, strand_course_recommendation } = req.body;
       const newConversation = new Conversation({
@@ -21,7 +21,7 @@ const user_addConversation_post = async (req, res) => {
    }
 };
 
-const user_fetchCourseByStrand_get = async (req, res) => {
+const user_getCoursesByStrand_get = async (req, res) => {
    try {
       const { strand } = req.params;
 
@@ -35,6 +35,6 @@ const user_fetchCourseByStrand_get = async (req, res) => {
 };
 
 module.exports = {
-   user_addConversation_post,
-   user_fetchCourseByStrand_get,
+   user_addConversations_post,
+   user_getCoursesByStrand_get,
 };

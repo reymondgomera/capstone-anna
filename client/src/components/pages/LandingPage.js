@@ -38,7 +38,7 @@ const LandingPage = () => {
          if (email && feedback) {
             if (isEmailValid(email)) {
                const body = { email, feedback };
-               const response = await fetch('/admin/feedback', {
+               const response = await fetch('/admin/feedbacks', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(body),
