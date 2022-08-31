@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext, Fragment } from 'react';
 import { v4 as uuid } from 'uuid';
 import Cookies from 'universal-cookie';
 import { ChatbotContext } from '../../context/ChatbotContext';
@@ -351,14 +351,24 @@ const Chatbot = () => {
          );
       } else if (message.msg && message.msg.payload.fields.cards) {
          return (
-            <div className='message-cards' key={i}>
-               <img className='chatbot-avatar message-avatar' src={chatbotAvatar} alt='chathead' />
-               <div className='cards'>
-                  <div style={{ width: message.msg.payload.fields.cards.listValue.values.length * 270 }}>
-                     {renderCards(message.msg.payload.fields.cards.listValue.values)}
+            <Fragment key={i}>
+               <div className='message-cards'>
+                  <img className='chatbot-avatar message-avatar' src={chatbotAvatar} alt='chathead' />
+                  <div className='cards'>
+                     <div style={{ width: message.msg.payload.fields.cards.listValue.values.length * 270 }}>
+                        {renderCards(message.msg.payload.fields.cards.listValue.values)}
+                     </div>
                   </div>
                </div>
-            </div>
+               {message.msg.payload.fields.quick_replies && (
+                  <QuickReplies
+                     messages={messages}
+                     setMessages={setMessages}
+                     replyClick={handleQuickReplyPayload}
+                     payload={message.msg.payload.fields.quick_replies.listValue.values}
+                  />
+               )}
+            </Fragment>
          );
       } else if (
          message.msg &&
@@ -448,9 +458,9 @@ const Chatbot = () => {
       };
 
       switch (payload) {
-         case 'DEGREE_PROGRAMS_OPTIONS_YES':
+         case 'COURSE_OPTIONS_YES':
             setMessages(prev => [...prev, humanSays]);
-            df_event_query('DEGREE_PROGRAMS_OPTIONS_YES');
+            df_event_query('COURSE_OPTIONS_YES');
             break;
 
          case 'RIASEC_START':
