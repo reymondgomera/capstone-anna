@@ -1,5 +1,6 @@
 const { WebhookClient, Payload } = require('dialogflow-fulfillment');
 const Course = require('../models/Course');
+const VideoMaterial = require('../models/VideoMaterial');
 
 module.exports = app => {
    app.post('/', async (req, res) => {
@@ -62,6 +63,25 @@ module.exports = app => {
             agent.add(' '); // adding dummy text to avoid error -> No responses defined for platform: null
             agent.setFollowupEvent('GET_AGE_FALLBACK');
          }
+      };
+
+      const handleCourseOptionsYes = async agent => {
+         const payload = {
+            cards: [],
+            text: '',
+            quick_replies: [
+               {
+                  text: 'Continue',
+                  payload: 'RIASEC_START',
+               },
+            ],
+         };
+
+         const videoMaterials = await VideoMaterial.find({}).sort({ createdAt: 'asc' });
+         payload.cards = videoMaterials.map(card => ({ title: card.title, link: card.url }));
+
+         agent.consoleMessages.forEach(message => agent.add(message));
+         agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
       };
 
       const handleWelcome = agent => {
@@ -296,6 +316,7 @@ module.exports = app => {
       intentMap.set('Default Welcome Intent', handleWelcome);
       intentMap.set('get-name', handleGetName);
       intentMap.set('get-age', handleGetAge);
+      intentMap.set('course-options-yes', handleCourseOptionsYes);
       intentMap.set('riasec-start', handleRiasecStart);
       intentMap.set('riasec-recommendation', handleRiasecRecommendation);
       intentMap.set('strand-recommendation', handleStrandRecommendation);
