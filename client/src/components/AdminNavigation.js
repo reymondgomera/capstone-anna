@@ -1,4 +1,4 @@
-import { MdHome, MdMessage, MdFeedback } from 'react-icons/md';
+import { MdHome, MdMessage, MdFeedback, MdVideoLibrary, MdClass } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 import { useContext } from 'react';
 import { UserContext } from '../context/UserContext';
@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 const AdminNavigation = () => {
    const { isSidebarActive, setIsSidebarActive } = useContext(UserContext);
-   const { height, width } = useWindowDimensions();
+   const { width } = useWindowDimensions();
 
    useEffect(() => {
       if (width < 768) setIsSidebarActive(true);
@@ -35,6 +35,18 @@ const AdminNavigation = () => {
                   {!isSidebarActive && <span>Conversation</span>}
                </NavLink>
             </li>
+            {/* <li>
+               <NavLink to='course' className={({ isActive }) => (isActive ? 'sidebar-link active' : 'sidebar-link')}>
+                  <MdClass className='icon-small me-2' />
+                  {!isSidebarActive && <span>Degree Program</span>}
+               </NavLink>
+            </li> */}
+            {/* <li>
+               <NavLink to='video-material' className={({ isActive }) => (isActive ? 'sidebar-link active' : 'sidebar-link')}>
+                  <MdVideoLibrary className='icon-small me-2' />
+                  {!isSidebarActive && <span>Video Material</span>}
+               </NavLink>
+            </li> */}
          </ul>
       </nav>
    );

@@ -14,6 +14,8 @@ import Dashboard from './components/pages/Dashboard';
 import Feedback from './components/pages/Feedback';
 import Conversation from './components/pages/Conversation';
 import ConversationDetails from './components/pages/ConversationDetails';
+// import VideoMaterial from './components/pages/VideoMaterial';
+// import Course from './components/pages/Course';
 
 function App() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,6 +75,8 @@ function App() {
                      <Route path='feedback' element={<Feedback />} />
                      <Route path='conversation' element={<Conversation />} />
                      <Route path='conversation/:conversationId' element={<ConversationDetails />} />
+                     {/* <Route path='video-material' element={<VideoMaterial />} /> */}
+                     {/* <Route path='course' element={<Course />} /> */}
                   </Route>
                   <Route path='/admin/login' element={!isAuthenticated ? <AdminLogin /> : <Navigate replace to='/admin/dashboard' />} />
                </Routes>

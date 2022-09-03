@@ -239,7 +239,7 @@ const Dashboard = () => {
                   <div className='chart-container'>
                      <PieChart data={highestRiasecData} options={highestRiasecOptions} />
                   </div>
-                  <div className='chart   -container'>
+                  <div className='chart-container'>
                      <PieChart data={sexData} options={sexOptions} />
                   </div>
                </>
