@@ -2,10 +2,11 @@ import { ChatbotContext } from '../../context/ChatbotContext';
 import { useEffect, useContext } from 'react';
 
 const RecommendedCoursesQuickReply = ({ basis, payload }) => {
-   const { setDisabledInput, setBasis } = useContext(ChatbotContext);
+   const { setDisabledInput, setBasis, setIsVisibleInput } = useContext(ChatbotContext);
 
    useEffect(() => {
       setDisabledInput(true); // when quickReplies rendered not allow user to type text in text input
+      setIsVisibleInput(false);
    }, []);
 
    return (

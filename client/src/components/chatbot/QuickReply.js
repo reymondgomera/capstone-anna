@@ -1,11 +1,15 @@
 import React, { useEffect, useContext } from 'react';
 import { ChatbotContext } from '../../context/ChatbotContext';
 
-const QuickReply = ({ reply, click }) => {
-   const { setDisabledInput } = useContext(ChatbotContext);
+const QuickReply = ({ reply, click, isRiasecQuickReplies }) => {
+   const { setDisabledInput, setIsVisibleInput } = useContext(ChatbotContext);
 
    useEffect(() => {
-      setDisabledInput(true); // when quickReplies rendered not allow user to type text in text input
+      // only disable input and make invisible the input and send button when its not a quick_reply of riasec-question
+      if (!isRiasecQuickReplies) {
+         setDisabledInput(true); // when quickReplies rendered not allow user to type text in text input
+         setIsVisibleInput(false);
+      }
    }, []);
 
    return (

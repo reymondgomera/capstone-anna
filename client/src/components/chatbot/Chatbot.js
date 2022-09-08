@@ -39,6 +39,9 @@ const Chatbot = () => {
       showBot,
       setShowbot,
       disabledInput,
+      setDisabledInput,
+      setIsVisibleInput,
+      isVisibleInput,
       botChatLoading,
       setBotChatLoading,
       basis,
@@ -47,6 +50,7 @@ const Chatbot = () => {
    } = useContext(ChatbotContext);
 
    const messagesRef = useRef(null);
+   const [courseOptionsTimer, setCourseOptionsTimer] = useState('');
    const [user, setUser] = useState({ name: '', age: '', sex: '', strand: '' });
    const [riasec, setRiasec] = useState({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
    const [riasecCode, setRiasecCode] = useState([]);
@@ -71,6 +75,16 @@ const Chatbot = () => {
          },
       };
 
+      // remove any preceding quick reply message before appending the user message
+      // check if preceing message is an quick if it is remove the message
+      if (
+         messages[messages.length - 1].msg.payload &&
+         messages[messages.length - 1].msg.payload.fields &&
+         messages[messages.length - 1].msg.payload.fields.quick_replies
+      ) {
+         removeQuickRepliesAfterType(messages, setMessages);
+      }
+
       setMessages(prev => [...prev, userSays]);
       setBotChatLoading(true);
 
@@ -86,8 +100,7 @@ const Chatbot = () => {
          console.dir(data);
 
          // provide message if response status 200, elese need to add chatbot message if server error 500
-
-         if (data) {
+         if (response.status === 200 && data) {
             if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
                clearState();
             } else if (endConversation) {
@@ -117,6 +130,53 @@ const Chatbot = () => {
                else if (fields.sex) setUser(prev => ({ ...prev, sex: fields.sex.stringValue }));
                else if (fields.strand) setUser(prev => ({ ...prev, strand: fields.strand.stringValue }));
             }
+
+            data.fulfillmentMessages.forEach(async msg => {
+               const botSays = {
+                  speaks: 'bot',
+                  msg: msg,
+               };
+               setMessages(prev => [...prev, botSays]);
+
+               // trigger something based on the payload sent by dialogflow
+               if (msg.payload && msg.payload.fields && msg.payload.fields.riasec) {
+                  const riasecValue = msg.payload.fields.riasec.stringValue;
+                  switch (riasecValue) {
+                     case 'realistic':
+                        setRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
+                        break;
+                     case 'investigative':
+                        setRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
+                        break;
+                     case 'artistic':
+                        setRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
+                        break;
+                     case 'social':
+                        setRiasec(prev => ({ ...prev, social: prev.social + 1 }));
+                        break;
+                     case 'enterprising':
+                        if (msg.payload.fields.riasec_last_question) {
+                           // trigger to get the up to date value of riasec with out waiting for the state to finish
+                           // because triggering the handleRiasecRecommendation() will not able to get the updated value of riasec state
+                           // applies only for enterprising since its the last question
+                           handleRiasecRecommendation({ ...riasec, enterprising: riasec.enterprising + 1 });
+                        }
+                        setRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
+                        break;
+                     case 'conventional':
+                        setRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
+                        break;
+                  }
+               }
+               if (msg.payload && msg.payload.fields && !msg.payload.fields.riasec && msg.payload.fields.riasec_last_question) {
+                  // trigger recommendation after last question and answer was "no"
+                  handleRiasecRecommendation(riasec);
+               }
+               if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
+                  df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
+                  setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
+               }
+            });
          } else {
             const botSays = {
                speaks: 'bot',
@@ -128,53 +188,6 @@ const Chatbot = () => {
             };
             setMessages(prev => [...prev, botSays]);
          }
-
-         data.fulfillmentMessages.forEach(async msg => {
-            const botSays = {
-               speaks: 'bot',
-               msg: msg,
-            };
-            setMessages(prev => [...prev, botSays]);
-
-            // trigger something based on the payload sent by dialogflow
-            if (msg.payload && msg.payload.fields && msg.payload.fields.riasec) {
-               const riasecValue = msg.payload.fields.riasec.stringValue;
-               switch (riasecValue) {
-                  case 'realistic':
-                     setRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
-                     break;
-                  case 'investigative':
-                     setRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
-                     break;
-                  case 'artistic':
-                     setRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
-                     break;
-                  case 'social':
-                     setRiasec(prev => ({ ...prev, social: prev.social + 1 }));
-                     break;
-                  case 'enterprising':
-                     if (msg.payload.fields.riasec_last_question) {
-                        // trigger to get the up to date value of riasec with out waiting for the state to finish
-                        // because triggering the handleRiasecRecommendation() will not able to get the updated value of riasec state
-                        // applies only for enterprising since its the last question
-                        handleRiasecRecommendation({ ...riasec, enterprising: riasec.enterprising + 1 });
-                     }
-                     setRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
-                     break;
-                  case 'conventional':
-                     setRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
-                     break;
-               }
-            }
-            if (msg.payload && msg.payload.fields && !msg.payload.fields.riasec && msg.payload.fields.riasec_last_question) {
-               // trigger recommendation after last question and answer was "no"
-               handleRiasecRecommendation(riasec);
-            }
-            if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
-               df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
-               setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
-            }
-         });
       } catch (err) {
          console.log(err.message);
 
@@ -205,40 +218,55 @@ const Chatbot = () => {
          setBotChatLoading(false);
          console.dir(data);
 
-         //clear all state when welcome intent trigger
-         if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
-            clearState();
-         }
-
-         data.fulfillmentMessages.forEach(async msg => {
-            const botSays = {
-               speaks: 'bot',
-               msg: msg,
-            };
-            setMessages(prev => [...prev, botSays]);
-
-            // trigger something based on the payload sent by dialogflow
-            if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
-               df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
-               setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
-            }
-            if (msg.payload && msg.payload.fields && msg.payload.fields.no_riasec_recommended_courses) {
-               // trigger only when no riasec recommendation
-               setIsRecommendationProvided(prev => ({ ...prev, riasec: '' }));
-            }
-            if (msg.payload && msg.payload.fields && msg.payload.fields.riasec_recommended_courses) {
-               const recommendedCourses = msg.payload.fields.riasec_recommended_courses.listValue.values;
-               setRiasecBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
-            }
-            if (msg.payload && msg.payload.fields && msg.payload.fields.strand_recommended_courses) {
-               const recommendedCourses = msg.payload.fields.strand_recommended_courses.listValue.values;
-               setStrandBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
-            }
-            if (msg.payload && msg.payload.fields && msg.payload.fields.end_conversation) {
-               savedConversation(user, riasecCode, riasecBasedRecommendedCourses, strandBasedRecommendedCourses);
+         if (response.status === 200 && data) {
+            //clear all state when welcome intent trigger
+            if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
                clearState();
             }
-         });
+
+            data.fulfillmentMessages.forEach(async msg => {
+               const botSays = {
+                  speaks: 'bot',
+                  msg: msg,
+               };
+               setMessages(prev => [...prev, botSays]);
+
+               // trigger something based on the payload sent by dialogflow
+               if (msg.payload && msg.payload.fields && msg.payload.fields.iswant_strand_recommendation) {
+                  df_event_query('STRAND_RECOMMENDATION', { strand: user.strand });
+                  setIsRecommendationProvided(prev => ({ ...prev, strand: 'done' }));
+               }
+               if (msg.payload && msg.payload.fields && msg.payload.fields.no_riasec_recommended_courses) {
+                  // trigger only when no riasec recommendation
+                  setIsRecommendationProvided(prev => ({ ...prev, riasec: '' }));
+               }
+               if (msg.payload && msg.payload.fields && msg.payload.fields.riasec_recommended_courses) {
+                  const recommendedCourses = msg.payload.fields.riasec_recommended_courses.listValue.values;
+                  setRiasecBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
+               }
+               if (msg.payload && msg.payload.fields && msg.payload.fields.strand_recommended_courses) {
+                  const recommendedCourses = msg.payload.fields.strand_recommended_courses.listValue.values;
+                  setStrandBasedRecommendedCourses(recommendedCourses.map(course => course.stringValue));
+               }
+               if (msg.payload && msg.payload.fields && msg.payload.fields.end_conversation) {
+                  savedConversation(user, riasecCode, riasecBasedRecommendedCourses, strandBasedRecommendedCourses);
+                  clearState();
+                  setDisabledInput(true);
+                  setIsVisibleInput(false);
+               }
+            });
+         } else {
+            const botSays = {
+               speaks: 'bot',
+               msg: {
+                  text: {
+                     text: 'Sorry. I am having trouble 🤕. I need to terminate. Will be back later.',
+                  },
+               },
+            };
+
+            setMessages(prev => [...prev, botSays]);
+         }
       } catch (err) {
          console.log(err.message);
 
@@ -254,6 +282,37 @@ const Chatbot = () => {
 
          setMessages(prev => [...prev, botSays]);
       }
+   };
+
+   const triggerCourseOptionYes = () => {
+      // this will keep the context exceeds the time limit of 20mins, because users might take time watching the videos
+      // after the  course options was rendered, trigger the course option timer after 15 minutes to reset the timer of the intent's context
+      // will be cleared after clicking "continue" quick reply
+      // only trigger the timer when courseOptionsTimer is empty or no courseOptiontimer tiggered to avoid duplication of timer when component is rendered again
+      // timer will still tigger even card component is unmounted
+      if (!courseOptionsTimer) {
+         const timerId = setInterval(async () => {
+            try {
+               const body = { event: 'COURSE_OPTIONS_YES', userId: cookies.get('userId') };
+               await fetch('/api/df_event_query', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(body),
+               });
+               console.log('course options timer triggered!');
+            } catch (err) {
+               console.error(err.message);
+            }
+         }, 900000);
+         setCourseOptionsTimer(timerId);
+      }
+   };
+
+   const clearCourseOptionsYes = () => {
+      // clear the timer
+      clearInterval(courseOptionsTimer);
+      setCourseOptionsTimer('');
+      console.log('course options timer cleared');
    };
 
    const clearState = () => {
@@ -362,6 +421,9 @@ const Chatbot = () => {
                </div>
                {message.msg.payload.fields.quick_replies && (
                   <QuickReplies
+                     triggerCourseOptionYes={triggerCourseOptionYes}
+                     clearCourseOptionsYes={clearCourseOptionsYes}
+                     isCardQuickReplies={message.msg.payload.fields.cards ? true : false}
                      messages={messages}
                      setMessages={setMessages}
                      replyClick={handleQuickReplyPayload}
@@ -392,6 +454,7 @@ const Chatbot = () => {
                messages={messages}
                setMessages={setMessages}
                replyClick={handleQuickReplyPayload}
+               isRiasecQuickReplies={message.msg.payload.fields.isriasec_quick_replies && message.msg.payload.fields.isriasec_quick_replies.boolValue}
                payload={message.msg.payload.fields.quick_replies.listValue.values}
             />
          );
@@ -442,6 +505,12 @@ const Chatbot = () => {
       // for smooth scrolling, added scroll-behavior: smooth in css for chatbot-messaes class
       // if (messagesRef.current) messagesRef.current.scrollIntoView({ behavior: 'smooth' });
       if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+   };
+
+   const removeQuickRepliesAfterType = (messages, setMessages) => {
+      const allMessages = messages;
+      messages.pop();
+      setMessages(allMessages);
    };
 
    const handleQuickReplyPayload = (e, payload, text) => {
@@ -563,6 +632,7 @@ const Chatbot = () => {
                {/* text-input */}
                <form className='chatbot-text-input' onSubmit={send}>
                   <input
+                     className={`${isVisibleInput ? 'visible' : 'invisible'}`}
                      disabled={!isAgreeTermsConditions || disabledInput ? true : false}
                      value={textMessage}
                      type='text'
@@ -570,12 +640,16 @@ const Chatbot = () => {
                      onChange={e => setTextMessage(e.target.value)}
                   />
                   <button className='btn p-0 chatbot-send' disabled={!textMessage ? true : false} type='submit'>
-                     <MdSend className='chatbot-send text-primary' />
+                     <MdSend className={`chatbot-send text-primary ${isVisibleInput ? 'visible' : 'invisible'}`} />
                   </button>
                </form>
+               <div className='chatbot-shadow'></div>
             </div>
          ) : (
-            <img className='chathead' src={chathead} alt='chathead' onClick={() => setShowbot(true)} />
+            <div className='chathead-container'>
+               <div className='chathead-message'>Hi! Chat with me 😊</div>
+               <img className='chathead' src={chathead} alt='chathead' onClick={() => setShowbot(true)} />
+            </div>
          )}
 
          {/* terms & conditions modal */}

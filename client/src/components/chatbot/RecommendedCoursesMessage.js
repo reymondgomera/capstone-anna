@@ -15,11 +15,12 @@ const RecommendedCoursesMessage = ({
    strand,
 }) => {
    const [isRecommendationLoading, setIsRecommendationLoading] = useState(false);
-   const { isRecommendationProvided, setIsRecommendationProvided, setDisabledInput } = useContext(ChatbotContext);
+   const { isRecommendationProvided, setIsRecommendationProvided, setDisabledInput, setIsVisibleInput } = useContext(ChatbotContext);
+   const [studentStrand] = useState(strand);
    const introductoryText = {
       riasec:
          'With your interest identified, I will show you degree programs that will be suitable for you to take in college. Allow me to show you these courses:',
-      strand: `Based on your SHS strand which is ${strand}, these are the following courses I could recommend you:`,
+      strand: `Based on your SHS strand which is ${studentStrand}, these are the following courses I could recommend you:`,
    };
 
    useEffect(() => {
@@ -28,6 +29,7 @@ const RecommendedCoursesMessage = ({
          // only trigger once
          setIsRecommendationLoading(true);
          setDisabledInput(true);
+         setIsVisibleInput(false);
          setTextMessage('');
          setTimeout(() => {
             setIsRecommendationLoading(false);
@@ -40,6 +42,7 @@ const RecommendedCoursesMessage = ({
          // only trigger once
          setIsRecommendationLoading(true);
          setDisabledInput(true);
+         setIsVisibleInput(false);
          setTextMessage('');
          setTimeout(() => {
             setIsRecommendationLoading(false);

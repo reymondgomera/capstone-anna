@@ -22,6 +22,7 @@ function App() {
    const [isAgreeTermsConditions, setIsAgreeTermsConditions] = useState(false);
    const [showBot, setShowbot] = useState(true);
    const [disabledInput, setDisabledInput] = useState(false);
+   const [isVisibleInput, setIsVisibleInput] = useState(true);
    const [botChatLoading, setBotChatLoading] = useState(false);
    const [isSidebarActive, setIsSidebarActive] = useState(false);
    const [isRecommendationProvided, setIsRecommendationProvided] = useState({ riasec: '', strand: '' });
@@ -48,6 +49,8 @@ function App() {
       setShowbot,
       disabledInput,
       setDisabledInput,
+      isVisibleInput,
+      setIsVisibleInput,
       botChatLoading,
       setBotChatLoading,
       isRecommendationProvided,

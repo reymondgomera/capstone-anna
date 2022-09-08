@@ -162,17 +162,22 @@ body {
 }
 
 /* form-control */
-.form-control {
+.form-control,
+.form-select {
    font-size: 0.9rem !important;
    color: var(--black) !important;
    background-color: var(--white) !important;
 }
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
    color: var(--black) !important;
    background-color: var(--white) !important;
    border-color: var(--primary) !important;
    outline: 0 !important;
    box-shadow: 0 0 0 0.25rem rgba(231, 178, 43, 25%) !important;
+}
+.form-select {
+   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgb(58, 58, 58)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
 }
 
 .cursor {

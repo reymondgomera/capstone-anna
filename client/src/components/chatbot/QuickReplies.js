@@ -1,9 +1,18 @@
 import QuickReply from './QuickReply';
 import { ChatbotContext } from '../../context/ChatbotContext';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
-const QuickReplies = ({ replyClick, payload, messages, setMessages }) => {
-   const { setDisabledInput } = useContext(ChatbotContext);
+const QuickReplies = ({
+   replyClick,
+   payload,
+   messages,
+   setMessages,
+   isRiasecQuickReplies,
+   isCardQuickReplies,
+   triggerCourseOptionYes,
+   clearCourseOptionsYes,
+}) => {
+   const { setDisabledInput, setIsVisibleInput } = useContext(ChatbotContext);
 
    const removeQuickRepliesAfterClick = (messages, setMessages) => {
       const allMessages = messages;
@@ -15,13 +24,21 @@ const QuickReplies = ({ replyClick, payload, messages, setMessages }) => {
       removeQuickRepliesAfterClick(messages, setMessages);
       replyClick(e, payload, text);
       setDisabledInput(false);
+      setIsVisibleInput(true);
+
+      if (isCardQuickReplies) clearCourseOptionsYes();
    };
 
    const renderQuickReplies = quickReplies => {
       if (quickReplies) {
-         return quickReplies.map((reply, i) => <QuickReply key={i} click={handleClick} reply={reply} />);
+         return quickReplies.map((reply, i) => <QuickReply key={i} click={handleClick} reply={reply} isRiasecQuickReplies={isRiasecQuickReplies} />);
       } else return null;
    };
+
+   useEffect(() => {
+      // tirgger only the course options  timer if it is a quickreplies of cards
+      if (isCardQuickReplies) triggerCourseOptionYes();
+   }, []);
 
    return (
       <>
