@@ -4,3 +4,4 @@ developmentNotes.txt
 config/dev.js
 .vercel
 mongoDB_playground
+.vscode

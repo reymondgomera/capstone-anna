@@ -75,6 +75,16 @@ const admin_getCourses_get = async (req, res) => {
    }
 };
 
+const admin_getDistinctStrand_get = async (req, res) => {
+   try {
+      const distinctStrand = await Course.distinct('strand');
+      res.json(distinctStrand);
+   } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ message: 'Server Error' });
+   }
+};
+
 const admin_addCourses_post = async (req, res) => {
    try {
       const { name, description, riasec_area, strand } = req.body;
@@ -128,7 +138,7 @@ const admin_deleteCourses_delete = async (req, res) => {
 // Conversation Controllers
 const admin_getConversations_get = async (req, res) => {
    try {
-      let { page, size, search, sort, order } = req.query;
+      let { page, size, search, sort, order, strand } = req.query;
 
       // set default page and size if queries are empty
       if (!page) page = 1;
@@ -137,6 +147,9 @@ const admin_getConversations_get = async (req, res) => {
       if (!sort) sort = 'createdAt';
       if (!order) order = 'desc';
 
+      if (strand === 'all') strand = {};
+      else strand = { strand };
+
       const limit = parseInt(size);
       const skip = (parseInt(page) - 1) * size; // e.g. page = 2, size = 10 -> skip = 10
       let sortText = '';
@@ -144,6 +157,7 @@ const admin_getConversations_get = async (req, res) => {
       if (sort && order) sortText = order !== 'desc' ? sort : `-${sort}`; // with dash(-) means sort in descending
 
       const conversations = await Conversation.find({ name: { $regex: search, $options: 'i' } })
+         .find(strand)
          .limit(limit)
          .skip(skip)
          .sort(sortText);
@@ -249,6 +263,7 @@ module.exports = {
    admin_getFeedbacks_get,
    admin_addFeedbacks_post,
    admin_getCourses_get,
+   admin_getDistinctStrand_get,
    admin_addCourses_post,
    admin_updateCourses_put,
    admin_deleteCourses_delete,
