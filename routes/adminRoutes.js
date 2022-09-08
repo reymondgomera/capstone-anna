@@ -9,6 +9,7 @@ router.get('/courses', authorization, adminController.admin_getCourses_get);
 router.post('/courses', authorization, adminController.admin_addCourses_post);
 router.put('/courses', authorization, adminController.admin_updateCourses_put);
 router.delete('/courses/:courseId', authorization, adminController.admin_deleteCourses_delete);
+router.get('/courses-distinct-strand', authorization, adminController.admin_getDistinctStrand_get);
 
 router.get('/conversations', authorization, adminController.admin_getConversations_get);
 router.get('/conversations/:conversationId', authorization, adminController.admin_getConversationsById_get);

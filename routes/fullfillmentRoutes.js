@@ -6,11 +6,11 @@ module.exports = app => {
    app.post('/', async (req, res) => {
       const agent = new WebhookClient({ request: req, response: res });
 
-      console.log('\n intent = ', agent.intent);
+      console.log('\nintent = ', agent.intent);
       console.log('paramters = ', JSON.stringify(agent.parameters));
       console.log('context = ', JSON.stringify(agent.contexts));
       console.log('messages = ', JSON.stringify(agent.consoleMessages));
-      console.log('query = ', agent.query); // user quiery
+      console.log('query = ', agent.query);
       console.log('type of query = ', typeof agent.query + '\n');
 
       // Utilities funcions
@@ -65,6 +65,34 @@ module.exports = app => {
          }
       };
 
+      const handleGetSex = async agent => {
+         const payload = {};
+
+         try {
+            const distinctStrand = await Course.distinct('strand');
+            payload.quick_replies = distinctStrand.map(strand => ({ payload: 'n/a', text: strand }));
+
+            agent.consoleMessages.forEach(message => agent.add(message));
+            agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
+         } catch (err) {
+            console.error(err.message);
+
+            // when error occur end the conversation, clear all context
+            const contexts = agent.contexts;
+            const errorPayload = { end_conversation: true };
+
+            // clear all context by setting lifespan to zero (0)
+            contexts.forEach(context => {
+               agent.setContext({ name: context.name, lifespan: 0 });
+            });
+
+            agent.add(
+               'Sorry. I am having trouble 🤕. I was unable to look up the distinct strand, which was supposed to be the basis of my recommendation. I need to terminate. Will be back later.'
+            );
+            agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
+         }
+      };
+
       const handleCourseOptionsYes = async agent => {
          const payload = {
             cards: [],
@@ -77,11 +105,29 @@ module.exports = app => {
             ],
          };
 
-         const videoMaterials = await VideoMaterial.find({}).sort({ createdAt: 'asc' });
-         payload.cards = videoMaterials.map(card => ({ title: card.title, link: card.url }));
+         try {
+            const videoMaterials = await VideoMaterial.find({}).sort({ createdAt: 'asc' });
+            payload.cards = videoMaterials.map(card => ({ title: card.title, link: card.url }));
 
-         agent.consoleMessages.forEach(message => agent.add(message));
-         agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
+            agent.consoleMessages.forEach(message => agent.add(message));
+            agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
+         } catch (err) {
+            console.error(err.message);
+
+            // when error occur end the conversation, clear all context
+            const contexts = agent.contexts;
+            const errorPayload = { end_conversation: true };
+
+            // clear all context by setting lifespan to zero (0)
+            contexts.forEach(context => {
+               agent.setContext({ name: context.name, lifespan: 0 });
+            });
+
+            agent.add(
+               'Sorry. I am having trouble 🤕. I was unable to look up the video materials, which I was supposed to be providing. I need to terminate. Will be back later.'
+            );
+            agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
+         }
       };
 
       const handleWelcome = agent => {
@@ -94,8 +140,23 @@ module.exports = app => {
       const handleRiasecStart = agent => {
          // remove basic-info contenxt
          const basicInfoContext = agent.getContext('basic-info');
+         const payload = {
+            quick_replies: [
+               {
+                  text: 'Yes',
+                  payload: 'n/a',
+               },
+               {
+                  payload: 'n/a',
+                  text: 'No',
+               },
+            ],
+            isriasec_quick_replies: true,
+         };
          if (basicInfoContext) agent.setContext({ name: basicInfoContext.name, lifespan: 0 });
+
          agent.consoleMessages.forEach(message => agent.add(message));
+         agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
       };
 
       const handleFallbackExceedTriggerLimit = agent => {
@@ -138,7 +199,7 @@ module.exports = app => {
             };
 
             const riasecAreasIdentify = `
-            Now. I already know the things you are interested in. You are ${getAandAn(parameters['0'][0])} 
+            Now, I already know the things you are interested in. You are ${getAandAn(parameters['0'][0])} 
             “${capitalizeFirstLetter(parameters['0'][0])}” ${!parameters['1'][1] && !parameters['2'][1] ? ' person.' : ''} 
             ${parameters['0'][1] && parameters['1'][1] && !parameters['2'][1] ? ' and ' : ''} ${parameters['2'][1] ? ' ,' : ''}
             ${parameters['1'][1] ? `“${capitalizeFirstLetter(parameters['1'][0])}”${parameters['2'][1] ? ' and ' : ' person.'}` : ''} 
@@ -183,13 +244,27 @@ module.exports = app => {
                const riasecBasedRecommendedCourses = await Course.find({ riasec_area: { $in: toFilterRiasecArea } }).sort({ name: 'asc' });
                const riasecBasedRecommendedCoursesNames = riasecBasedRecommendedCourses.map(course => course.name);
                payload.riasec_recommended_courses = riasecBasedRecommendedCoursesNames;
+
+               agent.add(riasecAreasIdentify);
+               agent.add(riasecAreasDescription);
+               agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true })); // passed custom payload
             } catch (err) {
                console.error(err.message);
-            }
 
-            agent.add(riasecAreasIdentify);
-            agent.add(riasecAreasDescription);
-            agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true })); // passed custom payload
+               // when error occur end the conversation, clear all context
+               const contexts = agent.contexts;
+               const errorPayload = { end_conversation: true };
+
+               // clear all context by setting lifespan to zero (0)
+               contexts.forEach(context => {
+                  agent.setContext({ name: context.name, lifespan: 0 });
+               });
+
+               agent.add(
+                  'Sorry. I am having trouble 🤕. I was unable to look up the degree programs, which was supposed to be my recommendation based on your RIASEC result. I need to terminate. Will be back later.'
+               );
+               agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
+            }
          }
       };
 
@@ -204,12 +279,26 @@ module.exports = app => {
          try {
             const strandBasedRecommendedCourses = await Course.find({ strand: { $in: toFilterStrand } }).sort({ name: 'asc' });
             const strandBasedRecommendedCoursesNames = strandBasedRecommendedCourses.map(course => course.name);
+
             payload.strand_recommended_courses = strandBasedRecommendedCoursesNames;
+            agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true })); // passed custom payload
          } catch (err) {
             console.error(err.message);
-         }
 
-         agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true })); // passed custom payload
+            // when error occur end the conversation, clear all context
+            const contexts = agent.contexts;
+            const errorPayload = { end_conversation: true };
+
+            // clear all context by setting lifespan to zero (0)
+            contexts.forEach(context => {
+               agent.setContext({ name: context.name, lifespan: 0 });
+            });
+
+            agent.add(
+               'Sorry. I am having trouble 🤕. I was unable to look up the degree programs, which was supposed to be my recommendation based on your strand. I need to terminate. Will be back later.'
+            );
+            agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
+         }
       };
 
       const handleGetRiasecRecommendationCourseInfo = async agent => {
@@ -239,8 +328,23 @@ module.exports = app => {
                agent.add(' ');
                agent.setFollowupEvent('ISLEARN_RIASEC_RECOMMENDED_COURSES_YES');
             }
-         } catch (error) {
-            agent.add('Sorry. I am having trouble 🤕. I was unable to look up the degree programs information at the moment.');
+         } catch (err) {
+            console.error(err.message);
+
+            // when error occur end the conversation, clear all context
+            const contexts = agent.contexts;
+            const errorPayload = { end_conversation: true };
+
+            // clear all context by setting lifespan to zero (0)
+            contexts.forEach(context => {
+               agent.setContext({ name: context.name, lifespan: 0 });
+            });
+
+            agent.add(
+               'Sorry. I am having trouble 🤕. I was unable to look up the degree programs information at the moment. I need to terminate. Will be back later.'
+            );
+
+            agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
          }
       };
 
@@ -265,7 +369,6 @@ module.exports = app => {
                   ],
                };
 
-               console.log(course);
                agent.add(course.description);
                agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true }));
             } else {
@@ -273,7 +376,22 @@ module.exports = app => {
                agent.setFollowupEvent('ISLEARN_STRAND_RECOMMENDED_COURSES_YES');
             }
          } catch (error) {
-            agent.add('Sorry. I am having trouble 🤕. I was unable to look up the degree programs information at the moment.');
+            console.error(err.message);
+
+            // when error occur end the conversation, clear all context
+            const contexts = agent.contexts;
+            const errorPayload = { end_conversation: true };
+
+            // clear all context by setting lifespan to zero (0)
+            contexts.forEach(context => {
+               agent.setContext({ name: context.name, lifespan: 0 });
+            });
+
+            agent.add(
+               'Sorry. I am having trouble 🤕. I was unable to look up the degree programs information at the moment. I need to terminate. Will be back later.'
+            );
+
+            agent.add(new Payload(agent.UNSPECIFIED, errorPayload, { rawPayload: true, sendAsMessage: true }));
          }
       };
 
@@ -316,6 +434,7 @@ module.exports = app => {
       intentMap.set('Default Welcome Intent', handleWelcome);
       intentMap.set('get-name', handleGetName);
       intentMap.set('get-age', handleGetAge);
+      intentMap.set('get-sex', handleGetSex);
       intentMap.set('course-options-yes', handleCourseOptionsYes);
       intentMap.set('riasec-start', handleRiasecStart);
       intentMap.set('riasec-recommendation', handleRiasecRecommendation);
