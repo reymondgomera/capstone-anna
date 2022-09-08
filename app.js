@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // db connect
-mongoose.connect(config.mongo_URI, { useNewUrlParser: true });
+mongoose.connect(config.mongo_URI, { serverSelectionTimeoutMS: 60000, connectTimeoutMS: 60000, socketTimeoutMS: 60000 });
 mongoose.connection.on('connected', () => console.log('Connected to MongoDB database successfully'));
 mongoose.connection.on('disconnected', () => console.log('MongoDB connection disconnected'));
 mongoose.connection.on('error', err => console.log('Error while connecting to MongoDB database: ' + err.message));
