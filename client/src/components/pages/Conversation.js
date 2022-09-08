@@ -28,9 +28,8 @@ const Conversation = () => {
    const handleSort = async (column, sortDirection) => {
       try {
          setisLoading(true);
-
          const response = await fetch(
-            `/admin/conversations?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
+            `/admin/conversations?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}&strand=all`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -53,9 +52,12 @@ const Conversation = () => {
    const fetchConversation = async page => {
       try {
          setisLoading(true);
-         const response = await fetch(`/admin/conversations?page=${page}?&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
-            headers: { token: localStorage.getItem('token') },
-         });
+         const response = await fetch(
+            `/admin/conversations?page=${page}?&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=all`,
+            {
+               headers: { token: localStorage.getItem('token') },
+            }
+         );
          const data = await response.json();
 
          if (response.status === 200) {
@@ -75,10 +77,12 @@ const Conversation = () => {
    const handleRowsPerPageChange = async (newPerPage, page) => {
       try {
          setisLoading(true);
-
-         const response = await fetch(`/admin/conversations?page=${page}?&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
-            headers: { token: localStorage.getItem('token') },
-         });
+         const response = await fetch(
+            `/admin/conversations?page=${page}?&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=all`,
+            {
+               headers: { token: localStorage.getItem('token') },
+            }
+         );
          const data = await response.json();
 
          if (response.status === 200) {

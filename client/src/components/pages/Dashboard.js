@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 
-import PieChart from '../PieChart';
+import BarChart from '../BarChart';
 import ContentNavbar from './ContentNavbar';
 import '../../styles/charts.css';
 
 const Dashboard = () => {
    const [conversations, setConversations] = useState([]);
+   const [conversationsPerStrand, setConversationsPerStrand] = useState([]);
+   const [strandOptions, setStrandOptions] = useState([]);
    const [studentByHighestRiasec, setStudentByHighestRiasec] = useState({
       realistic: 0,
       investigative: 0,
@@ -16,22 +18,44 @@ const Dashboard = () => {
       enterprising: 0,
       conventional: 0,
    });
-   const [studentByRiasec, setStudentByRiasec] = useState({
-      realistic: 0,
-      investigative: 0,
-      artistic: 0,
-      social: 0,
-      enterprising: 0,
-      conventional: 0,
-   });
-
    const [studentBySex, setStudentBySex] = useState({ male: 0, female: 0 });
+   const [studentByStrand, setStudentByStrand] = useState({});
    const [isLoading, setisLoading] = useState(false);
 
-   const fetchConversations = async () => {
+   const [inputs, setInputs] = useState({ strand: 'all' });
+   const { strand } = inputs;
+
+   const fetchAllConversations = async () => {
       try {
          setisLoading(true);
-         const response = await fetch('/admin/conversations', {
+         const response = await fetch(`/admin/conversations?strand=all`, {
+            headers: { token: localStorage.getItem('token') },
+         });
+         const data = await response.json();
+
+         if (response.status === 200) {
+            setConversationsPerStrand(data.conversations);
+            setisLoading(false);
+         } else toast.error(data.message);
+      } catch (err) {
+         console.log(err.message);
+      }
+   };
+
+   const fetchConversationsByStrand = async strand => {
+      setStudentBySex({ male: 0, female: 0 });
+      setStudentByHighestRiasec({
+         realistic: 0,
+         investigative: 0,
+         artistic: 0,
+         social: 0,
+         enterprising: 0,
+         conventional: 0,
+      });
+
+      try {
+         setisLoading(true);
+         const response = await fetch(`/admin/conversations?strand=${strand}`, {
             headers: { token: localStorage.getItem('token') },
          });
          const data = await response.json();
@@ -45,119 +69,109 @@ const Dashboard = () => {
       }
    };
 
-   const riasecData = {
-      labels: ['Realistic', 'Investigaive', 'Artistic', 'Social', 'Enterprising', 'Conventional'],
-      datasets: [
-         {
-            label: 'RIASEC',
-            data: Object.entries(studentByRiasec).map(e => e[1]),
-            backgroundColor: ['#3E80E4', '#FF3131', '#FFA450', '#DC49E9', '#5BDC47', '#FFC83D'],
-            borderColor: '#FFFFFF',
-            borderWidth: 5,
-         },
-      ],
+   const fetchDistinctStrand = async () => {
+      try {
+         const response = await fetch('/admin/courses-distinct-strand', {
+            headers: { token: localStorage.getItem('token') },
+         });
+         const data = await response.json();
+
+         if (response.status === 200) {
+            setStrandOptions(data);
+
+            // convert array distict strand to object assign value to 0(zero), lowercase its property name, remove space and charater that is not letter
+            setStudentByStrand(
+               data.reduce(
+                  (a, v) => ({
+                     ...a,
+                     [v
+                        .toLowerCase()
+                        .replaceAll(' ', '')
+                        .replaceAll(/[^a-zA-Z ]/g, '')]: 0,
+                  }),
+                  {}
+               )
+            );
+         } else toast.error(data.message);
+      } catch (err) {
+         console.log(err.message);
+      }
    };
 
-   const riasecOptions = {
-      plugins: {
-         legend: {
-            display: true,
-            position: 'bottom',
-         },
+   const getOptions = titleText => {
+      return {
          responsive: true,
-         tooltip: {
-            boxPadding: 5,
-         },
-         title: {
-            display: true,
-            text: '# of Students by RIASEC Area',
-            font: {
-               size: 17,
+         plugins: {
+            legend: {
+               display: false, // hide dataset labels
+               position: 'bottom',
             },
-            padding: {
-               top: 15,
-               bottom: 15,
+            tooltip: {
+               boxPadding: 5,
+            },
+            title: {
+               display: true,
+               text: titleText,
+               font: {
+                  size: 17,
+               },
+               padding: {
+                  top: 15,
+                  bottom: 15,
+               },
             },
          },
-      },
+         scale: {
+            ticks: {
+               precision: 0,
+            },
+         },
+      };
    };
 
-   const highestRiasecData = {
+   const studentByHighestRiasecData = {
       labels: ['Realistic', 'Investigaive', 'Artistic', 'Social', 'Enterprising', 'Conventional'],
       datasets: [
          {
-            label: 'RIASEC',
+            label: 'Conversation Data',
             data: Object.entries(studentByHighestRiasec).map(e => e[1]),
             backgroundColor: ['#3E80E4', '#FF3131', '#FFA450', '#DC49E9', '#5BDC47', '#FFC83D'],
-            borderColor: '#FFFFFF',
-            borderWidth: 5,
          },
       ],
    };
 
-   const highestRiasecOptions = {
-      plugins: {
-         legend: {
-            display: true,
-            position: 'bottom',
+   const studentByStrandData = {
+      labels: strandOptions,
+      datasets: [
+         {
+            label: 'Conversation Data',
+            data: studentByStrand && Object.entries(studentByStrand).map(e => e[1]),
+            backgroundColor: ['#FF7C70'],
          },
-         responsive: true,
-         tooltip: {
-            boxPadding: 5,
-         },
-         title: {
-            display: true,
-            text: '# of Students by highest/strongest RIASEC Area',
-            font: {
-               size: 17,
-            },
-            padding: {
-               top: 15,
-               bottom: 15,
-            },
-         },
-      },
+      ],
    };
 
-   const sexData = {
+   const studentBySexData = {
       labels: ['Male', 'Female'],
       datasets: [
          {
-            label: '# of Sex',
+            label: 'Conversation Data',
             data: Object.entries(studentBySex).map(e => e[1]),
             backgroundColor: ['#3E80E4', '#FF3131'],
-            borderColor: '#FFFFFF',
-            borderWidth: 5,
          },
       ],
    };
 
-   const sexOptions = {
-      plugins: {
-         legend: {
-            display: true,
-            position: 'bottom',
-         },
-         responsive: true,
-         tooltip: {
-            boxPadding: 5,
-         },
-         title: {
-            display: true,
-            text: '# of Students by Sex',
-            font: {
-               size: 17,
-            },
-            padding: {
-               top: 15,
-               bottom: 15,
-            },
-         },
-      },
+   const handleFilterStrandChange = e => {
+      const strandValue = e.target.value.includes('&') ? e.target.value.replace('&', '%26') : e.target.value;
+      setInputs(prev => ({ ...prev, strand: strandValue }));
+      fetchConversationsByStrand(strandValue);
    };
 
    useEffect(() => {
-      fetchConversations();
+      fetchDistinctStrand();
+      fetchConversationsByStrand('all');
+      fetchAllConversations();
    }, []);
 
    useEffect(() => {
@@ -173,79 +187,94 @@ const Dashboard = () => {
          console.log('scoreCode3 = ', scoreCode3);
 
          // add +1 in specific area if riasec_code's riasec_area is same as area (riasec area)
-         // add +1 in 2nd riasec_code's area if 1st riasec_code's score is equal to 2nd riasec_code's score
-         // add +1 in 3nd riasec_code's area if 1st riasec_code's score is equal to 3nd riasec_code's score
          // execute only if 1nd riasec_code's score must not be zero
          if (scoreCode1[1] && scoreCode1[0] === 'realistic') {
             setStudentByHighestRiasec(prev => ({ ...prev, realistic: prev.realistic + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === realistic || ${scoreCode1[0]}`);
          } else if (scoreCode1[1] && scoreCode1[0] === 'investigative') {
             setStudentByHighestRiasec(prev => ({ ...prev, investigative: prev.investigative + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === investigative || ${scoreCode1[0]}`);
          } else if (scoreCode1[1] && scoreCode1[0] === 'artistic') {
             setStudentByHighestRiasec(prev => ({ ...prev, artistic: prev.artistic + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === artistic || ${scoreCode1[0]}`);
          } else if (scoreCode1[1] && scoreCode1[0] === 'social') {
             setStudentByHighestRiasec(prev => ({ ...prev, social: prev.social + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === social || ${scoreCode1[0]}`);
          } else if (scoreCode1[1] && scoreCode1[0] === 'enterprising') {
             setStudentByHighestRiasec(prev => ({ ...prev, enterprising: prev.enterprising + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === enterprising || ${scoreCode1[0]}`);
          } else if (scoreCode1[1] && scoreCode1[0] === 'conventional') {
             setStudentByHighestRiasec(prev => ({ ...prev, conventional: prev.conventional + 1 }));
-            console.log(`if 1 - riasec_code's riasec_area is same as area (riasec area), ${scoreCode1[0]} === conventional || ${scoreCode1[0]}`);
          }
 
+         // add +1 in 2nd riasec_code's riasec_area if 1st riasec_code's score is equal to 2nd riasec_code's score
+         // add +1 in 3nd riasec_code's riasec_area if 1st riasec_code's score is equal to 3nd riasec_code's score
+         // execute only if 1nd riasec_code's score must not be zero
          if (scoreCode1[1] && scoreCode1[1] === scoreCode2[1]) {
             setStudentByHighestRiasec(prev => ({ ...prev, [scoreCode2[0]]: prev[scoreCode2[0]] + 1 }));
-            console.log(
-               `if 2 - 1st riasec_code's score is equal to 2nd riasec_code's score, ${scoreCode1[1]} === ${scoreCode2[1]} || ${scoreCode2[0]}`
-            );
          }
          if (scoreCode1[1] && scoreCode1[1] === scoreCode3[1]) {
             setStudentByHighestRiasec(prev => ({ ...prev, [scoreCode3[0]]: prev[scoreCode3[0]] + 1 }));
-            console.log(
-               `if 3 - 1st riasec_code's score is equal to 3nd riasec_code's score, ${scoreCode1[1]} === ${scoreCode3[1]} || ${scoreCode3[0]}`
-            );
          }
       });
 
-      // add count riasec area where student belong only if it is not equal to zero
-      conversations.forEach((conversation, i) => {
-         conversation.riasec_code.forEach((code, i) => {
-            console.log(`Riase Code ${i} = `, code);
-            if (code[1]) setStudentByRiasec(prev => ({ ...prev, [code[0]]: prev[code[0]] + 1 }));
-         });
-         console.log('index = ', i);
-      });
-
       // adding to count to male and female
+      // # of students by sex
       conversations.forEach(conversation => {
          if (conversation.sex === 'Male') setStudentBySex(prev => ({ ...prev, male: prev.male + 1 }));
          if (conversation.sex === 'Female') setStudentBySex(prev => ({ ...prev, female: prev.female + 1 }));
       });
    }, [conversations]);
 
+   useEffect(() => {
+      // iterate over the distict strand, then if conversation strand or strand of student is sanme as the given strand then + 1
+      strandOptions.forEach(st => {
+         const strand = st
+            .toLowerCase()
+            .replaceAll(' ', '')
+            .replaceAll(/[^a-zA-Z ]/g, '');
+         conversationsPerStrand.forEach(conversation => {
+            if (conversation.strand === st) {
+               setStudentByStrand(prev => ({ ...prev, [strand]: prev[`${strand}`] + 1 }));
+            }
+         });
+      });
+   }, [conversationsPerStrand]);
+
    return (
       <div className='admin-contents px-4 pb-4'>
          <ContentNavbar />
          <h1 className='h3 custom-heading mt-3 mb-2'>Dashboard</h1>
+         <div className='mb-2 d-flex justify-content-end align-items-center'>
+            <span className='me-2'>Filter: </span>
+            <select
+               className='form-select'
+               style={{ width: '15%' }}
+               name='strand'
+               id='strand'
+               onChange={handleFilterStrandChange}
+               disabled={isLoading}
+            >
+               <option value='all'>All</option>
+               {strandOptions &&
+                  strandOptions.map((strand, i) => (
+                     <option className='text-wrap' key={i} value={strand}>
+                        {strand}
+                     </option>
+                  ))}
+            </select>
+         </div>
          <div className='w-100 d-flex flex-wrap justify-content-center align-items-center'>
             {!isLoading ? (
                <>
                   <div className='chart-container'>
-                     <PieChart data={riasecData} options={riasecOptions} />
+                     <BarChart data={studentByHighestRiasecData} options={getOptions('Number of Students by Highest/Strongest RIASEC Area')} />
                   </div>
                   <div className='chart-container'>
-                     <PieChart data={highestRiasecData} options={highestRiasecOptions} />
+                     <BarChart data={studentBySexData} options={getOptions('Number of Students by Sex')} />
                   </div>
                   <div className='chart-container'>
-                     <PieChart data={sexData} options={sexOptions} />
+                     <BarChart data={studentByStrandData} options={getOptions('Number of Students by Strand')} />
                   </div>
                </>
             ) : (
-               <div className='p-5'>
-                  <div className='spinner-border spinner-lg text-primary' role='status'></div>;
+               <div className='position-absolute top-50 start-50 translate-middle p-5'>
+                  <div className='spinner-border spinner-lg text-primary' role='status'></div>
                </div>
             )}
          </div>

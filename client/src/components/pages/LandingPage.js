@@ -136,7 +136,7 @@ const LandingPage = () => {
                      <img className='mb-3' src={john} alt='reymond' width='145' />
                      <p className='m-0 custom-heading text-break text-center'>John Michael Amto</p>
                      <p className='m-0 text-break text-center'>jamto_190000000229@uic.edu.ph</p>
-                     <p className='m-0 text-center'>PROGRAMMER | TECHNICAL WRITER | QA</p>
+                     <p className='m-0 text-center'>TECHNICAL WRITER | QA</p>
                   </div>
                   <div className='d-flex flex-column align-items-center member p-3'>
                      <img className='mb-3' src={ryan} alt='reymond' width='145' />

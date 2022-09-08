@@ -81,7 +81,10 @@ const VideoMaterial = () => {
                   } else toast.error(data.message);
                })
                .catch(err => console.error(err.message));
-         } else toast.error("Delete operation can't be completed!");
+         } else {
+            setisLoading(false);
+            toast.error("Delete operation can't be completed!");
+         }
       } catch (err) {
          console.error(err.message);
       }
