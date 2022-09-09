@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
@@ -9,6 +9,7 @@ import Modal from '../Modal';
 import '../../styles/datatablebase.css';
 
 const Feedback = () => {
+   const isMounted = useRef(false);
    const [feedbacks, setFeedbacks] = useState([]);
    const [searchKey, setSearchKey] = useState('');
 
@@ -58,7 +59,7 @@ const Feedback = () => {
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setFeedbacks(data.feedbacks);
             setTotalRows(data.total);
             setisLoading(false);
@@ -139,7 +140,12 @@ const Feedback = () => {
    };
 
    useEffect(() => {
+      isMounted.current = true;
       fetchFeedbacks(1);
+
+      return () => {
+         isMounted.current = false;
+      };
    }, []);
 
    return (

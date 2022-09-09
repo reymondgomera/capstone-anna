@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import BarChart from '../BarChart';
 import ContentNavbar from './ContentNavbar';
 import '../../styles/charts.css';
 
 const Dashboard = () => {
+   const isMounted = useRef(false);
    const [conversations, setConversations] = useState([]);
    const [conversationsPerStrand, setConversationsPerStrand] = useState([]);
    const [strandOptions, setStrandOptions] = useState([]);
@@ -33,7 +34,7 @@ const Dashboard = () => {
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setConversationsPerStrand(data.conversations);
             setisLoading(false);
          } else toast.error(data.message);
@@ -60,7 +61,7 @@ const Dashboard = () => {
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setConversations(data.conversations);
             setisLoading(false);
          } else toast.error(data.message);
@@ -76,7 +77,7 @@ const Dashboard = () => {
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setStrandOptions(data);
 
             // convert array distict strand to object assign value to 0(zero), lowercase its property name, remove space and charater that is not letter
@@ -169,9 +170,14 @@ const Dashboard = () => {
    };
 
    useEffect(() => {
+      isMounted.current = true;
       fetchDistinctStrand();
       fetchConversationsByStrand('all');
       fetchAllConversations();
+
+      return () => {
+         isMounted.current = false;
+      };
    }, []);
 
    useEffect(() => {
@@ -181,10 +187,6 @@ const Dashboard = () => {
          const scoreCode1 = conversation.riasec_code[0];
          const scoreCode2 = conversation.riasec_code[1];
          const scoreCode3 = conversation.riasec_code[2];
-
-         console.log('scoreCode1 = ', scoreCode1);
-         console.log('scoreCode2 = ', scoreCode2);
-         console.log('scoreCode3 = ', scoreCode3);
 
          // add +1 in specific area if riasec_code's riasec_area is same as area (riasec area)
          // execute only if 1nd riasec_code's score must not be zero

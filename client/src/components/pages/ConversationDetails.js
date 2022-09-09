@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { MdArrowBack } from 'react-icons/md';
 
 const ConversationDetails = () => {
    const navigate = useNavigate();
+   const isMounted = useRef(false);
    const { conversationId } = useParams();
    const [conversation, setConversation] = useState();
    const [isLoading, setisLoading] = useState(false);
@@ -17,7 +18,7 @@ const ConversationDetails = () => {
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setConversation(data.conversation);
             setisLoading(false);
          } else toast.error(data.message);
@@ -27,7 +28,12 @@ const ConversationDetails = () => {
    };
 
    useEffect(() => {
+      isMounted.current = true;
       fetchConversation();
+
+      return () => {
+         isMounted.current = false;
+      };
    }, []);
 
    return (

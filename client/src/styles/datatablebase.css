@@ -24,6 +24,10 @@
 }
 
 /* modals */
-.rdt_Table .modal-title {
+.rdt_Table .modal-header .modal-title {
    font-size: 1.25rem !important;
+}
+.rdt_Table .modal-header svg {
+   font-size: 25px !important;
+   max-width: 25px !important;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
@@ -9,6 +9,7 @@ import DataTableBase from '../DataTableBase';
 import '../../styles/datatablebase.css';
 
 const Conversation = () => {
+   const isMounted = useRef(false);
    const [conversations, setConversations] = useState([]);
    const [searchKey, setSearchKey] = useState('');
 
@@ -60,7 +61,7 @@ const Conversation = () => {
          );
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setConversations(data.conversations);
             setTotalRows(data.total);
             setisLoading(false);
@@ -157,7 +158,12 @@ const Conversation = () => {
    };
 
    useEffect(() => {
+      isMounted.current = true;
       fetchConversation(1);
+
+      return () => {
+         isMounted.current = false;
+      };
    }, []);
 
    return (
