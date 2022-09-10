@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ChatbotContext } from './context/ChatbotContext';
 import { UserContext } from './context/UserContext';
 
@@ -21,6 +21,7 @@ function App() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
    const [isAgreeTermsConditions, setIsAgreeTermsConditions] = useState(false);
    const [showBot, setShowbot] = useState(true);
+   const inputRef = useRef(null);
    const [disabledInput, setDisabledInput] = useState(false);
    const [isVisibleInput, setIsVisibleInput] = useState(true);
    const [botChatLoading, setBotChatLoading] = useState(false);
@@ -49,6 +50,7 @@ function App() {
       setShowbot,
       disabledInput,
       setDisabledInput,
+      inputRef,
       isVisibleInput,
       setIsVisibleInput,
       botChatLoading,

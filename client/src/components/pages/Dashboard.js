@@ -27,6 +27,20 @@ const Dashboard = () => {
    const { strand } = inputs;
 
    const fetchAllConversations = async () => {
+      // convert array distict strand to object assign value to 0(zero), lowercase its property name, remove space and charater that is not letter
+      setStudentByStrand(
+         strandOptions.reduce(
+            (a, v) => ({
+               ...a,
+               [v
+                  .toLowerCase()
+                  .replaceAll(' ', '')
+                  .replaceAll(/[^a-zA-Z ]/g, '')]: 0,
+            }),
+            {}
+         )
+      );
+
       try {
          setisLoading(true);
          const response = await fetch(`/admin/conversations?strand=all`, {
@@ -173,12 +187,20 @@ const Dashboard = () => {
       isMounted.current = true;
       fetchDistinctStrand();
       fetchConversationsByStrand('all');
-      fetchAllConversations();
 
       return () => {
          isMounted.current = false;
       };
    }, []);
+
+   useEffect(() => {
+      isMounted.current = true;
+      fetchAllConversations();
+
+      return () => {
+         isMounted.current = false;
+      };
+   }, [strand]);
 
    useEffect(() => {
       // adding count to riasec areas only if it is equal to highest score
@@ -239,7 +261,7 @@ const Dashboard = () => {
    }, [conversationsPerStrand]);
 
    return (
-      <div className='admin-contents px-4 pb-4'>
+      <div className='admin-contents px-4 pb-4 position-relative'>
          <ContentNavbar />
          <h1 className='h3 custom-heading mt-3 mb-2'>Dashboard</h1>
          <div className='mb-2 d-flex justify-content-end align-items-center'>

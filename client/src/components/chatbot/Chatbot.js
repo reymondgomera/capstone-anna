@@ -38,6 +38,7 @@ const Chatbot = () => {
       setIsAgreeTermsConditions,
       showBot,
       setShowbot,
+      inputRef,
       disabledInput,
       setDisabledInput,
       setIsVisibleInput,
@@ -632,6 +633,7 @@ const Chatbot = () => {
                {/* text-input */}
                <form className='chatbot-text-input' onSubmit={send}>
                   <input
+                     ref={inputRef}
                      className={`${isVisibleInput ? 'visible' : 'invisible'}`}
                      disabled={!isAgreeTermsConditions || disabledInput ? true : false}
                      value={textMessage}

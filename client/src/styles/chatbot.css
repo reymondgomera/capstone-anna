@@ -224,6 +224,7 @@
 }
 
 .course-recommendation.active {
+   color: var(--primary) !important;
    border-bottom: none !important;
    border-top: none !important;
    border-right: none !important;

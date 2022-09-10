@@ -1,7 +1,15 @@
 import '../../styles/chatbot.css';
 import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
+import { useContext, useEffect } from 'react';
+import { ChatbotContext } from '../../context/ChatbotContext';
 
 const Message = ({ keyword, speaks, text }) => {
+   const { inputRef } = useContext(ChatbotContext);
+
+   useEffect(() => {
+      inputRef.current.focus();
+   }, []);
+
    return (
       <>
          <div className={`message ${speaks !== 'bot' && 'user'}`}>
