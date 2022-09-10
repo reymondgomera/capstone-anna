@@ -240,10 +240,19 @@
       left: 50%;
       transform: translate(-50%, -50%);
    }
+
+   .chatbot .message-text {
+      font-size: 0.85rem;
+   }
 }
 
 @media (max-height: 500px) {
    .chatbot {
+      height: 90%;
       overflow-y: auto;
+
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
    }
 }

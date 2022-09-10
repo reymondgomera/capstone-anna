@@ -645,7 +645,7 @@ const Chatbot = () => {
                      <MdSend className={`chatbot-send text-primary ${isVisibleInput ? 'visible' : 'invisible'}`} />
                   </button>
                </form>
-               <div className='chatbot-shadow'></div>
+               {/* <div className='chatbot-shadow'></div> */}
             </div>
          ) : (
             <div className='chathead-container'>
