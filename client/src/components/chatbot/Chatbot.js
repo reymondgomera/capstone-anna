@@ -56,7 +56,7 @@ const Chatbot = () => {
    const [riasec, setRiasec] = useState({ realistic: 0, investigative: 0, artistic: 0, social: 0, enterprising: 0, conventional: 0 });
    const [riasecCode, setRiasecCode] = useState([]);
    const [fallbackCount, setFallbackCount] = useState({});
-   const [endConversation, setEndConversation] = useState(false);
+   const [endConversation, setEndConversation] = useState(false); // state for purposely ending the conversation
 
    // recommeded courses
    const [knownCourses, setKnownCourses] = useState([]);
@@ -104,9 +104,12 @@ const Chatbot = () => {
          if (response.status === 200 && data) {
             if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
                clearState();
-            } else if (endConversation) {
+            } else if (!data.intent || endConversation) {
                // trigger if the conversation was ended because of fallback exceed trigger limit
+               // or trigger if no other intent match, such as expired context or exceed 20mins
                df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
+               clearState();
+               setEndConversation(true);
             } else if (data.intent && data.intent.isFallback) {
                // set fallbackCount if fallback is trigger
                const intentName = data.intent.displayName;
@@ -223,6 +226,16 @@ const Chatbot = () => {
             //clear all state when welcome intent trigger
             if (data.intent && data.intent.displayName === 'Default Welcome Intent') {
                clearState();
+            } else if (!data.intent) {
+               // or trigger if no other intent match, such as expired context or exceed 20mins
+               df_event_query('FALLBACK_EXCEED_TRIGGER_LIMIT');
+               clearState();
+               setEndConversation(true);
+
+               // make input field visible and not disable so users can type
+               // make sure that user can type and see the input after ending conversation
+               setDisabledInput(false);
+               setIsVisibleInput(true);
             }
 
             data.fulfillmentMessages.forEach(async msg => {
