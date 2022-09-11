@@ -1,18 +1,22 @@
 @font-face {
    font-family: GTWalsheimProRegular;
-   src: url('./fonts/GTWalsheimPro-Regular.ttf');
+   src: url('./fonts/GTWalsheimPro-Regular.ttf') format('truetype'), url('./fonts/GTWalsheimPro-Regular.woff') format('woff'),
+      url('./fonts/GTWalsheimPro-Regular.woff2') format('woff2');
 }
 @font-face {
    font-family: GTWalsheimProLight;
-   src: url('./fonts/GTWalsheimPro-Light.ttf');
+   src: url('./fonts/GTWalsheimPro-Light.ttf') format('truetype'), url('./fonts/GTWalsheimPro-Light.woff') format('woff'),
+      url('./fonts/GTWalsheimPro-Light.woff2') format('woff2');
 }
 @font-face {
    font-family: GTWalsheimProThin;
-   src: url('./fonts/GTWalsheimPro-Thin.ttf');
+   src: url('./fonts/GTWalsheimPro-Thin.ttf') format('truetype'), url('./fonts/GTWalsheimPro-Thin.woff') format('woff'),
+      url('./fonts/GTWalsheimPro-Thin.woff2') format('woff2');
 }
 @font-face {
    font-family: GTWalsheimProBold;
-   src: url('./fonts/GTWalsheimPro-Bold.ttf');
+   src: url('./fonts/GTWalsheimPro-Bold.ttf') format('truetype'), url('./fonts/GTWalsheimPro-Bold.woff') format('woff'),
+      url('./fonts/GTWalsheimPro-Bold.woff2') format('woff2');
 }
 
 :root {

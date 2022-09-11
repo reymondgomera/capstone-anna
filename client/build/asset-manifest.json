@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.0614e073.css",
+    "main.css": "/static/css/main.17ea0760.css",
     "main.js": "/static/js/main.7e343f40.js",
     "static/media/Reymond.svg": "/static/media/Reymond.c281d52cde42cb80988f287d140976a6.svg",
     "static/media/GTWalsheimPro-Thin.ttf": "/static/media/GTWalsheimPro-Thin.77a576962f55f88e50e6.ttf",
@@ -8,18 +8,26 @@
     "static/media/GTWalsheimPro-Bold.ttf": "/static/media/GTWalsheimPro-Bold.2dbf49e9fcb548837711.ttf",
     "static/media/GTWalsheimPro-Regular.ttf": "/static/media/GTWalsheimPro-Regular.1fd3cd7ade0f79b2152a.ttf",
     "static/media/John.svg": "/static/media/John.50c23703a9ded9c77cdac1fc451e56c3.svg",
+    "static/media/GTWalsheimPro-Bold.woff": "/static/media/GTWalsheimPro-Bold.6ead5fc9d23b21a10d0a.woff",
+    "static/media/GTWalsheimPro-Thin.woff": "/static/media/GTWalsheimPro-Thin.a34b3b16e778860c9c7d.woff",
+    "static/media/GTWalsheimPro-Light.woff": "/static/media/GTWalsheimPro-Light.746a8c5dd95a36e54e1a.woff",
+    "static/media/GTWalsheimPro-Regular.woff": "/static/media/GTWalsheimPro-Regular.1668df1c1c97770e0490.woff",
     "static/media/Anna_Chathead.svg": "/static/media/Anna_Chathead.415165aab925fadaff591098294c7f0d.svg",
     "static/media/Anna_1.svg": "/static/media/Anna_1.04a89d9e3537d56281ae9785ae9ebdd0.svg",
     "static/media/Anna_Chat_Avatar.svg": "/static/media/Anna_Chat_Avatar.e98c4691684c9a2dd4e100364e29b10f.svg",
+    "static/media/GTWalsheimPro-Bold.woff2": "/static/media/GTWalsheimPro-Bold.6b113f6b3bd165884e16.woff2",
+    "static/media/GTWalsheimPro-Thin.woff2": "/static/media/GTWalsheimPro-Thin.8d12017af90b41aa30d3.woff2",
+    "static/media/GTWalsheimPro-Regular.woff2": "/static/media/GTWalsheimPro-Regular.6aff6f11d3d29930c9fe.woff2",
+    "static/media/GTWalsheimPro-Light.woff2": "/static/media/GTWalsheimPro-Light.a929e9e6cee8e3ffe8a2.woff2",
     "static/media/Ryan.svg": "/static/media/Ryan.a28adacaaefd922b1894c864735f8632.svg",
     "static/media/chatbot-loading.gif": "/static/media/chatbot-loading.e6e3f36241e687429351.gif",
     "static/media/brainstorm.svg": "/static/media/brainstorm.642377e6327eda4919f11f997c6c6f1b.svg",
     "index.html": "/index.html",
-    "main.0614e073.css.map": "/static/css/main.0614e073.css.map",
+    "main.17ea0760.css.map": "/static/css/main.17ea0760.css.map",
     "main.7e343f40.js.map": "/static/js/main.7e343f40.js.map"
   },
   "entrypoints": [
-    "static/css/main.0614e073.css",
+    "static/css/main.17ea0760.css",
     "static/js/main.7e343f40.js"
   ]
 }
