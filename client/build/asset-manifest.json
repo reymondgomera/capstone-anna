@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.17ea0760.css",
-    "main.js": "/static/js/main.7e343f40.js",
+    "main.css": "/static/css/main.426e1c30.css",
+    "main.js": "/static/js/main.2cf81323.js",
     "static/media/Reymond.svg": "/static/media/Reymond.c281d52cde42cb80988f287d140976a6.svg",
     "static/media/GTWalsheimPro-Thin.ttf": "/static/media/GTWalsheimPro-Thin.77a576962f55f88e50e6.ttf",
     "static/media/GTWalsheimPro-Light.ttf": "/static/media/GTWalsheimPro-Light.0a89fe38505661051946.ttf",
@@ -23,11 +23,11 @@
     "static/media/chatbot-loading.gif": "/static/media/chatbot-loading.e6e3f36241e687429351.gif",
     "static/media/brainstorm.svg": "/static/media/brainstorm.642377e6327eda4919f11f997c6c6f1b.svg",
     "index.html": "/index.html",
-    "main.17ea0760.css.map": "/static/css/main.17ea0760.css.map",
-    "main.7e343f40.js.map": "/static/js/main.7e343f40.js.map"
+    "main.426e1c30.css.map": "/static/css/main.426e1c30.css.map",
+    "main.2cf81323.js.map": "/static/js/main.2cf81323.js.map"
   },
   "entrypoints": [
-    "static/css/main.17ea0760.css",
-    "static/js/main.7e343f40.js"
+    "static/css/main.426e1c30.css",
+    "static/js/main.2cf81323.js"
   ]
 }

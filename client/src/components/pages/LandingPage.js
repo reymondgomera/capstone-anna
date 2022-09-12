@@ -107,10 +107,10 @@ const LandingPage = () => {
                <div className='px-3'>
                   <h2 className='h4 custom-heading'>Anna</h2>
                   <p>
-                     This is Anna, a career recommender chatbot. Anna helps you, a senior high school student who is looking for recommendations on
-                     what degree programs to take on college by getting your interest and sharing you information about existing degree programs out
-                     there. Anna will help you with your queries and feel free to ask Anna for recommendation, she will be very pleased to meeting
-                     you.
+                     This is Anna, a degree program recommender chatbot. Anna helps you, a senior high school student who is looking for
+                     recommendations on what degree programs to take on college by getting your interest and your senior high school strand and
+                     sharing you information about existing degree programs out there. Anna will help you with your queries and feel free to ask Anna
+                     for recommendation, she will be very pleased to meeting you.
                   </p>
                </div>
                <div className='px-3'>
@@ -166,6 +166,26 @@ const LandingPage = () => {
                   <div>
                      <h3 className='h6 custom-heading'>RESEARCHERS:</h3>
                      <p>Rey Mond Gomera, John Michael Amto, Ryan Christian Hibaya</p>
+                  </div>
+                  <div>
+                     <h3 className='h6 custom-heading'>USER GUIDELINES:</h3>
+                     <p>
+                        Anna the chatbot uses the English language to converse with students, therefore it is expected that you as the user will use
+                        the English language to reply to Anna, otherwise the chatbot would not recognise your response.
+                     </p>
+                     <p>
+                        If the user is idle for more than 20 minutes, Anna would end the conversation by replying phrases just like, "I think I lost
+                        you there. Please do reach out to me again anytime. I'll be here 😊". If this happens, greeting Anna with words like "Hello",
+                        "Hi" will start a new conversation.
+                     </p>
+                     <p>
+                        If any problems have occured during the conversation process, or you have any suggestions or comments you would like to share
+                        with the researchers, please leave a feedback
+                        <a className='text-primary ms-1' href='/#feedback'>
+                           here
+                        </a>
+                        . Your insights and suggestions would help improve our project.
+                     </p>
                   </div>
                   <div>
                      <h3 className='h6 custom-heading'>CONFIDENTIALITY:</h3>

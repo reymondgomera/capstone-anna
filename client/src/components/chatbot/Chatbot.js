@@ -679,6 +679,27 @@ const Chatbot = () => {
             </div>
 
             <div className='p-2'>
+               <h1 className='h5 custom-heading text-primary'>USER GUIDELINES:</h1>
+               <p>
+                  Anna the chatbot uses the English language to converse with students, therefore it is expected that you as the user will use the
+                  English language to reply to Anna, otherwise the chatbot would not recognise your response.
+               </p>
+               <p>
+                  If the user is idle for more than 20 minutes, Anna would end the conversation by replying phrases just like, "I think I lost you
+                  there. Please do reach out to me again anytime. I'll be here 😊". If this happens, greeting Anna with words like "Hello", "Hi" will
+                  start a new conversation.
+               </p>
+               <p className='mb-1'>
+                  If any problems have occured during the conversation process, or you have any suggestions or comments you would like to share with
+                  the researchers, please leave a feedback
+                  <a className='text-primary ms-1' href='/#feedback'>
+                     here
+                  </a>
+                  . Your insights and suggestions would help improve our project.
+               </p>
+            </div>
+
+            <div className='p-2'>
                <h1 className='h5 custom-heading text-primary'>CONFIDENTIALITY</h1>
                <p>
                   The information that Anna will be obtaining througout the conversation will remain confidential to protect your rights or welfare.
