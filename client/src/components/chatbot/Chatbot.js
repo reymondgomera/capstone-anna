@@ -615,7 +615,7 @@ const Chatbot = () => {
    return (
       <>
          {showBot ? (
-            <div className='chatbot'>
+            <div className='chatbot shadow'>
                {/* chatbot header */}
                <div className='chatbot-header d-flex justify-content-between align-items-center bg-primary'>
                   <div>
