@@ -19,6 +19,7 @@ const Feedback = () => {
    const [sort, setSort] = useState('');
    const [order, setOrder] = useState('');
    const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+   const sortRef = useRef(null);
 
    const search = e => {
       e.preventDefault();
@@ -27,6 +28,10 @@ const Feedback = () => {
    };
 
    const handleSort = async (column, sortDirection) => {
+      // plus(+) to convert date to timestamp date
+      // workaround for react-data-table bug: onChangePage trigger when doing onSort to other page expcept page 1
+      sortRef.current = +new Date();
+
       try {
          setisLoading(true);
 
@@ -70,6 +75,11 @@ const Feedback = () => {
    };
 
    const handlePageChange = page => {
+      // plus(+) to convert date to timestamp date
+      // workaround for react-data-table bug: onChangePage trigger when doing onSort to other page expcept page 1
+      // only trigger onChangePage when Page change and not other way around
+      const now = +new Date();
+      if (now - sortRef.current < 500) return;
       fetchFeedbacks(page);
    };
 
