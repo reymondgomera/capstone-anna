@@ -7,5 +7,5 @@ module.exports = {
    mongo_URI: process.env.MONGO_URI,
    jwt_secret: process.env.JWT_SECRET,
    admin_google_client_email: process.env.ADMIN_GOOGLE_CLIENT_EMAIL,
-   admin_google_private_key: process.env.ADMIN_GOOGLE_PRIVATE_KEY,
+   admin_google_private_key: JSON.parse(process.env.ADMIN_GOOGLE_PRIVATE_KEY),
 };
