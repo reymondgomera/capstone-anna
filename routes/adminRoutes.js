@@ -19,4 +19,9 @@ router.post('/video-materials', authorization, adminController.admin_addVideoMat
 router.put('/video-materials', authorization, adminController.admin_updateVideoMaterials_put);
 router.delete('/video-materials/:videoMaterialId', authorization, adminController.admin_deleteVideoMaterials_delete);
 
+router.get('/strands', authorization, adminController.admin_getStrands_get);
+router.post('/strands', authorization, adminController.admin_addStrands_post);
+router.put('/strands', authorization, adminController.admin_updateStrand_put);
+router.delete('/strands/:strandId', authorization, adminController.admin_deleteStrand_delete);
+
 module.exports = router;
