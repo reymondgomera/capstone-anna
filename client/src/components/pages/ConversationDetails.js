@@ -95,7 +95,7 @@ const ConversationDetails = () => {
                            <div className='fs-5 mb-2'>RIASEC</div>
                            <div className='bg-grey rounded p-3 conversation-recommendation-container'>
                               {conversation.riasec_course_recommendation.length > 0 ? (
-                                 <ul className='ps-3'>
+                                 <ul className='mb-0 ps-3'>
                                     {conversation.riasec_course_recommendation.map((course, i) => (
                                        <li key={i}>{course}</li>
                                     ))}
@@ -109,7 +109,7 @@ const ConversationDetails = () => {
                            <div className='fs-5 mb-2'>Strand</div>
                            <div className='bg-grey rounded p-3 conversation-recommendation-container'>
                               {conversation.strand_course_recommendation.length > 0 ? (
-                                 <ul className='ps-3'>
+                                 <ul className='mb-0 ps-3'>
                                     {conversation.strand_course_recommendation.map((course, i) => (
                                        <li key={i}>{course}</li>
                                     ))}

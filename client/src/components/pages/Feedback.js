@@ -36,7 +36,7 @@ const Feedback = () => {
          setisLoading(true);
 
          const response = await fetch(
-            `/admin/feedbacks?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
+            `/admin/feedbacks?page=${1}&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -59,7 +59,7 @@ const Feedback = () => {
    const fetchFeedbacks = async page => {
       try {
          setisLoading(true);
-         const response = await fetch(`/admin/feedbacks?page=${page}?&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
+         const response = await fetch(`/admin/feedbacks?page=${page}&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
             headers: { token: localStorage.getItem('token') },
          });
          const data = await response.json();
@@ -87,7 +87,7 @@ const Feedback = () => {
       try {
          setisLoading(true);
 
-         const response = await fetch(`/admin/feedbacks?page=${page}?&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
+         const response = await fetch(`/admin/feedbacks?page=${page}&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
             headers: { token: localStorage.getItem('token') },
          });
          const data = await response.json();
@@ -133,7 +133,9 @@ const Feedback = () => {
                   <MdRemoveRedEye className='actions-btn' />
                </span>
                <Modal title='Feedback' target={`feedback-view-${row._id}`} size='modal-lg'>
+                  <h2 className='h6 custom-heading'>Email:</h2>
                   <div className='bg-grey rounded p-3 mb-3'>{row.email}</div>
+                  <h2 className='h6 custom-heading'>Feedback:</h2>
                   <div className='bg-grey rounded p-3 mb-3'>{row.feedback}</div>
                </Modal>
             </>

@@ -9,7 +9,7 @@ const ContentNavbar = () => {
    const signout = () => {
       localStorage.removeItem('token');
       setIsAuthenticated(false);
-      toast.success('User signout successfully!');
+      toast.success('User signed out successfully!');
    };
 
    return (

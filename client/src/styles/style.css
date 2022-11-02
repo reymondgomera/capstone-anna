@@ -94,6 +94,7 @@
       font-size: 1.5rem;
    }
    .section p,
+   .section li,
    .section button {
       font-size: 0.9rem;
    }
@@ -115,5 +116,9 @@
    .member > img {
       display: block;
       margin: 0 auto;
+   }
+
+   .page-not-found h1 {
+      font-size: 5rem !important;
    }
 }

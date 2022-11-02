@@ -14,6 +14,7 @@ import Dashboard from './components/pages/Dashboard';
 import Feedback from './components/pages/Feedback';
 import Conversation from './components/pages/Conversation';
 import ConversationDetails from './components/pages/ConversationDetails';
+import PageNotFound from './components/pages/PageNotFound';
 // import VideoMaterial from './components/pages/VideoMaterial';
 // import Course from './components/pages/Course';
 
@@ -84,6 +85,7 @@ function App() {
                      {/* <Route path='course' element={<Course />} /> */}
                   </Route>
                   <Route path='/admin/login' element={!isAuthenticated ? <AdminLogin /> : <Navigate replace to='/admin/dashboard' />} />
+                  <Route path='*' element={<PageNotFound />} />
                </Routes>
             </Router>
             <ToastContainer theme='light' transition={Flip} autoClose='2000' />

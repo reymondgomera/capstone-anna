@@ -93,6 +93,13 @@ body {
 .text-danger {
    color: var(--danger) !important;
 }
+.text-grey {
+   color: var(--grey) !important;
+}
+
+.text-sm {
+   font-size: 0.9rem !important;
+}
 
 /* buttons */
 .btn-primary {
@@ -165,23 +172,47 @@ body {
    box-shadow: 0 0 0 0.25rem rgba(231, 178, 43, 50%) !important;
 }
 
+.btn-sm {
+   font-size: 0.9rem;
+}
+
 /* form-control */
 .form-control,
-.form-select {
+.form-select,
+.form-check-input {
    font-size: 0.9rem !important;
    color: var(--black) !important;
    background-color: var(--white) !important;
 }
 .form-control:focus,
-.form-select:focus {
+.form-select:focus,
+.form-check-input:focus {
    color: var(--black) !important;
    background-color: var(--white) !important;
    border-color: var(--primary) !important;
    outline: 0 !important;
    box-shadow: 0 0 0 0.25rem rgba(231, 178, 43, 25%) !important;
 }
+.form-control:disabled,
+.form-select:disabled {
+   background-color: var(--grey) !important;
+   opacity: 1 !important;
+}
+
 .form-select {
    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgb(58, 58, 58)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+.form-select > option {
+   font-size: 0.9rem !important;
+}
+
+.form-check-input:checked {
+   background-color: var(--primary) !important;
+   border-color: var(--primary) !important;
+}
+
+textarea.form-control {
+   resize: none !important;
 }
 
 .cursor {
@@ -220,7 +251,6 @@ body::-webkit-scrollbar-thumb {
    min-width: 25px;
    font-size: 25px;
 }
-
 .icon-medium {
    min-width: 30px;
    font-size: 30px;
@@ -229,13 +259,23 @@ body::-webkit-scrollbar-thumb {
    min-width: 50px;
    font-size: 50px;
 }
-
 .custom-icon-large {
    width: 50px;
+}
+
+.icon-small.hover-primary:hover,
+.icon-medium.hover-primary:hover,
+.icon-large.hover-primary:hover {
+   color: var(--primary);
 }
 
 /* spinner */
 .spinner-lg {
    width: 100px;
    height: 100px;
+}
+
+.spinner-sm {
+   width: 50px;
+   height: 50px;
 }

@@ -27,7 +27,7 @@ const Chatbot = () => {
          keyword: 'terms-conditions',
          msg: {
             text: {
-               text: 'Hello. Before we begin, in this session I will take your basic information. You must first read and agreed on the terms presented in the',
+               text: 'Hello. Before we begin, in this session I will take your basic information. You must first read and agree on the terms presented in the',
             },
          },
       },
@@ -669,28 +669,39 @@ const Chatbot = () => {
          {/* terms & conditions modal */}
          <Modal title='Terms and Conditions' target='modal-terms-conditions' size='modal-lg'>
             <div className='p-2'>
-               <p className='mb-1'>
-                  As you converse with Anna, you are to agree to bounded by these terms and conditions: Your responses to Anna will be recorded and be
-                  used for analysis. You agree that the information you provided in this study will include your basic information (Name, Age, Sex)
-                  and senior high school strand for these information will be necessary for identification and for the recommendation of degree
-                  programs.
-               </p>
+               <p>In using Anna, you agree to these terms and conditions:</p>
+               <ol className='m-0' type='A'>
+                  <li>All responses and correspondences with Anna will be recorded.</li>
+                  <li>
+                     Information such as name (required), age (required), sex (required), senior high school strand (required), and related
+                     correspondence will be for the exclusive use of this study to continuously improve Anna.
+                  </li>
+                  <li>The data collected will be used for as long as it is needed for further analysis or investigation.</li>
+                  <li>You are free to exit the conversation with Anna if you feel the need to do so.</li>
+               </ol>
+            </div>
+
+            <div className='p-2'>
+               <h1 className='h5 custom-heading text-primary'>TITLE OF STUDY:</h1>
+               <p className='mb-1'>ANNA: A Web-based Chatbot for Career Planning following Cooperative Principle</p>
+            </div>
+
+            <div className='p-2'>
+               <h1 className='h5 custom-heading text-primary'>RESEARCHERS:</h1>
+               <p className='mb-1'>Rey Mond Gomera, John Michael Amto, Ryan Christian Hibaya</p>
             </div>
 
             <div className='p-2'>
                <h1 className='h5 custom-heading text-primary'>USER GUIDELINES:</h1>
+               <p>Anna could only converse in the English language. It is then recommended that your responses be in English.</p>
                <p>
-                  Anna the chatbot uses the English language to converse with students, therefore it is expected that you as the user will use the
-                  English language to reply to Anna, otherwise the chatbot would not recognise your response.
-               </p>
-               <p>
-                  If the user is idle for more than 20 minutes, Anna would end the conversation by replying phrases just like, "I think I lost you
-                  there. Please do reach out to me again anytime. I'll be here 😊". If this happens, greeting Anna with words like "Hello", "Hi" will
-                  start a new conversation.
+                  If the user is idle for more than 20 minutes, Anna would end the conversation by replying with phrases like, "I think I lost you
+                  there. Please do reach out to me again anytime. I'll be here 😊". If this happens, greeting Anna with words like "Hello", or "Hi",
+                  will start a new conversation.
                </p>
                <p className='mb-1'>
-                  If any problems have occured during the conversation process, or you have any suggestions or comments you would like to share with
-                  the researchers, please leave a feedback
+                  If any problems occur during the conversation process, or you have any suggestions or comments you would like to share with the
+                  researchers, please leave a feedback
                   <a className='text-primary ms-1' href='/#feedback'>
                      here
                   </a>
@@ -701,11 +712,11 @@ const Chatbot = () => {
             <div className='p-2'>
                <h1 className='h5 custom-heading text-primary'>CONFIDENTIALITY</h1>
                <p>
-                  The information that Anna will be obtaining througout the conversation will remain confidential to protect your rights or welfare.
+                  The information that Anna will be obtaining throughout the conversation will remain confidential to protect your rights or welfare.
                </p>
-               <p className='mb-1'>
+               <p>
                   RA 10173 or the Data Privacy Act protects individuals from unauthorized processing of personal information. To ensure that your
-                  information protected, The researchers will follow this law to keep your information safe and confidential.
+                  information is protected, the researchers will follow this law to keep your information safe and confidential.
                </p>
             </div>
 
@@ -716,7 +727,7 @@ const Chatbot = () => {
                   words will be provided:
                </p>
                <p className='mb-1'>
-                  <span className='fw-bold'>Degree Program</span> - A class that a college of university offers to students. (Bachelor in science in
+                  <span className='fw-bold'>Degree Program</span> - A class that a college of university offers to students. (Bachelor of Science in
                   Information Technology, etc..)
                </p>
                <p className='mb-1'>

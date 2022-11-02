@@ -11,6 +11,7 @@ import '../../styles/datatablebase.css';
 import Modal from '../Modal';
 
 const VideoMaterial = () => {
+   const isMounted = useRef(false);
    const [videoMaterials, setVideoMaterials] = useState([]);
    const [searchKey, setSearchKey] = useState('');
 
@@ -20,6 +21,7 @@ const VideoMaterial = () => {
    const [sort, setSort] = useState('');
    const [order, setOrder] = useState('');
    const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+   const sortRef = useRef(null);
 
    const [inputs, setInputs] = useState({ title: '' });
    const [videos, setVideos] = useState([]);
@@ -257,11 +259,15 @@ const VideoMaterial = () => {
    };
 
    const handleSort = async (column, sortDirection) => {
+      // plus(+) to convert date to timestamp date
+      // workaround for react-data-table bug: onChangePage trigger when doing onSort to other page expcept page 1
+      sortRef.current = +new Date();
+
       try {
          setisLoading(true);
 
          const response = await fetch(
-            `/admin/video-materials?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
+            `/admin/video-materials?page=${1}&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -285,12 +291,12 @@ const VideoMaterial = () => {
       try {
          setisLoading(true);
 
-         const response = await fetch(`/admin/video-materials?page=${page}?&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
+         const response = await fetch(`/admin/video-materials?page=${page}&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
             headers: { token: localStorage.getItem('token') },
          });
          const data = await response.json();
 
-         if (response.status === 200) {
+         if (isMounted.current && response.status === 200) {
             setVideoMaterials(data.videoMaterials);
             setTotalRows(data.total);
             setisLoading(false);
@@ -301,6 +307,11 @@ const VideoMaterial = () => {
    };
 
    const handlePageChange = page => {
+      // plus(+) to convert date to timestamp date
+      // workaround for react-data-table bug: onChangePage trigger when doing onSort to other page expcept page 1
+      // only trigger onChangePage when Page change and not other way around
+      const now = +new Date();
+      if (now - sortRef.current < 500) return;
       fetchVideoMaterials(page);
    };
 
@@ -308,7 +319,7 @@ const VideoMaterial = () => {
       try {
          setisLoading(true);
 
-         const response = await fetch(`/admin/video-materials?page=${page}?&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
+         const response = await fetch(`/admin/video-materials?page=${page}&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}`, {
             headers: { token: localStorage.getItem('token') },
          });
          const data = await response.json();
@@ -380,7 +391,12 @@ const VideoMaterial = () => {
    };
 
    useEffect(() => {
+      isMounted.current = true;
       fetchVideoMaterials(1);
+
+      return () => {
+         isMounted.current = false;
+      };
    }, []);
 
    return (

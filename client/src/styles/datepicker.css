@@ -1,0 +1,15 @@
+.datepicker {
+   text-align: center;
+   width: 70px;
+}
+
+.react-datepicker-popper {
+   z-index: 100 !important;
+}
+
+.react-datepicker__year-text--keyboard-selected,
+.react-datepicker__year-text--selected {
+   border-radius: 0.3rem !important;
+   background-color: var(--primary) !important;
+   color: var(--white) !important;
+}
