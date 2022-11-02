@@ -18,7 +18,7 @@ const signup_post = async (req, res) => {
          const createdUser = await newUser.save();
 
          const token = jwtGenerator(createdUser._id);
-         res.json({ token, message: 'User sign up successfully!' });
+         res.json({ token, message: 'User signed up successfully!' });
       }
    } catch (err) {
       console.error(err.message);
@@ -36,13 +36,13 @@ const signin_post = async (req, res) => {
          if (user.role === 'admin') {
             if (user.password === password) {
                const token = jwtGenerator(user._id);
-               res.json({ token, message: 'User sign in successfully!' });
+               res.json({ token, message: 'User signed in successfully!' });
             } else res.status(403).json({ message: 'Incorrect credentials!' });
          } else {
             const isValidPassword = await bcrypt.compare(password, user.password);
             if (isValidPassword) {
                const token = jwtGenerator(user._id);
-               res.json({ token, message: 'User sign in successfully!' });
+               res.json({ token, message: 'User signed in successfully!' });
             } else res.status(403).json({ message: 'Incorrect credentials!' });
          }
       }
