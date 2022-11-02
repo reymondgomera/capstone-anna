@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { MdSearch, MdRemoveRedEye } from 'react-icons/md';
+import { MdSearch, MdRemoveRedEye, MdFilterAlt } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import ContentNavbar from './ContentNavbar';
 import DataTableBase from '../DataTableBase';
 import '../../styles/datatablebase.css';
+import '../../styles/datepicker.css';
 
 const Conversation = () => {
    const isMounted = useRef(false);
@@ -21,10 +24,43 @@ const Conversation = () => {
    const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
    const sortRef = useRef(null);
 
+   const [strandOptions, setStrandOptions] = useState([]);
+   const [inputs, setInputs] = useState({ strand: 'all' });
+   const { strand } = inputs;
+
+   const [filters, setFilters] = useState({ year: null }); // contains property that will be use for filters when fetching conversation
+   const [schoolYearStart, setSchoolYearStart] = useState(null);
+   const [isFilterByYear, setIsFilterByYear] = useState(false);
+
    const search = e => {
       e.preventDefault();
       fetchConversation(1);
       setResetPaginationToggle(prev => !prev);
+   };
+
+   const filter = async () => {
+      try {
+         setisLoading(true);
+         const response = await fetch(
+            `/admin/conversations?page=${1}&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=${strand}&year=${
+               schoolYearStart ? schoolYearStart.getFullYear() : ''
+            }`,
+            {
+               headers: { token: localStorage.getItem('token') },
+            }
+         );
+         const data = await response.json();
+
+         if (isMounted.current && response.status === 200) {
+            setConversations(data.conversations);
+            setTotalRows(data.total);
+            setisLoading(false);
+            setFilters({ year: schoolYearStart });
+            setResetPaginationToggle(prev => !prev);
+         } else toast.error(data.message);
+      } catch (err) {
+         console.error(err.message);
+      }
    };
 
    const handleSort = async (column, sortDirection) => {
@@ -35,7 +71,9 @@ const Conversation = () => {
       try {
          setisLoading(true);
          const response = await fetch(
-            `/admin/conversations?page=${1}?&size=${rowsPerPage}&search=${searchKey}&sort=${column.sortField}&order=${sortDirection}&strand=all`,
+            `/admin/conversations?page=${1}&size=${rowsPerPage}&search=${searchKey}&sort=${
+               column.sortField
+            }&order=${sortDirection}&strand=${strand}&year=${schoolYearStart ? schoolYearStart.getFullYear() : ''}`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -59,7 +97,9 @@ const Conversation = () => {
       try {
          setisLoading(true);
          const response = await fetch(
-            `/admin/conversations?page=${page}?&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=all`,
+            `/admin/conversations?page=${page}&size=${rowsPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=${strand}&year=${
+               filters.year ? filters.year.getFullYear() : ''
+            }`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -89,7 +129,9 @@ const Conversation = () => {
       try {
          setisLoading(true);
          const response = await fetch(
-            `/admin/conversations?page=${page}?&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=all`,
+            `/admin/conversations?page=${page}&size=${newPerPage}&search=${searchKey}&sort=${sort}&order=${order}&strand=${strand}&year=${
+               filters.year ? filters.year.getFullYear() : ''
+            }`,
             {
                headers: { token: localStorage.getItem('token') },
             }
@@ -159,6 +201,34 @@ const Conversation = () => {
       },
    ];
 
+   const handleFilterStrandChange = e => {
+      const strandValue = e.target.value.includes('&') ? e.target.value.replace('&', '%26') : e.target.value;
+      setInputs(prev => ({ ...prev, strand: strandValue }));
+   };
+
+   const fetchDistinctStrand = async () => {
+      try {
+         const response = await fetch('/admin/courses-distinct-strand', {
+            headers: { token: localStorage.getItem('token') },
+         });
+         const data = await response.json();
+
+         if (isMounted.current && response.status === 200) {
+            setStrandOptions(data);
+         } else toast.error(data.message);
+      } catch (err) {
+         console.log(err.message);
+      }
+   };
+
+   const handleIsFilterByYearChange = e => {
+      if (e.target.checked) setIsFilterByYear(e.target.checked);
+      else {
+         setIsFilterByYear(e.target.checked);
+         setSchoolYearStart(null);
+      }
+   };
+
    const Loading = () => {
       return (
          <div className='p-5'>
@@ -169,6 +239,7 @@ const Conversation = () => {
 
    useEffect(() => {
       isMounted.current = true;
+      fetchDistinctStrand();
       fetchConversation(1);
 
       return () => {
@@ -179,9 +250,9 @@ const Conversation = () => {
    return (
       <div className='admin-contents px-4 pb-4'>
          <ContentNavbar />
-         <div>
-            <h1 className='h3 custom-heading mt-3 mb-2'>Conversation</h1>
-            <form className='mb-3' onSubmit={search} style={{ width: '38%' }}>
+         <h1 className='h3 custom-heading mt-3 mb-2'>Conversation</h1>
+         <div className='d-flex flex-wrap justify-content-between align-items-center'>
+            <form className='mb-3' onSubmit={search} style={{ width: '30%' }}>
                <div className='input-group flex-nowrap'>
                   <input
                      className='form-control'
@@ -198,27 +269,81 @@ const Conversation = () => {
                </div>
             </form>
 
-            <DataTableBase
-               columns={columns}
-               data={conversations}
-               responsive
-               highlightOnHover
-               fixedHeader
-               persistTableHead
-               fixedHeaderScrollHeight='65vh'
-               progressPending={isLoading}
-               progressComponent={<Loading />}
-               pagination
-               paginationServer
-               paginationTotalRows={totalRows}
-               onChangeRowsPerPage={handleRowsPerPageChange}
-               onChangePage={handlePageChange}
-               paginationComponentOptions={{ rowsPerPageText: 'Item per page:', selectAllRowsItem: true, selectAllRowsItemText: 'All' }}
-               paginationResetDefaultPage={resetPaginationToggle}
-               sortServer
-               onSort={handleSort}
-            />
+            <div className='d-flex mb-3'>
+               <div className='d-flex align-items-center me-3'>
+                  <span className='text-sm me-3'>Strand: </span>
+                  <select className='form-select' name='strand' id='strand' onChange={handleFilterStrandChange} disabled={isLoading}>
+                     <option value='all'>Overall</option>
+                     {strandOptions &&
+                        strandOptions.map((strand, i) => (
+                           <option className='text-wrap' key={i} value={strand}>
+                              {strand}
+                           </option>
+                        ))}
+                  </select>
+               </div>
+
+               <div className='d-flex align-items-center me-3'>
+                  <div className='form-check'>
+                     <input
+                        className='form-check-input me-2'
+                        type='checkbox'
+                        value={isFilterByYear}
+                        checked={isFilterByYear}
+                        id='isFilterByYear'
+                        name='isFilterByYear'
+                        onChange={handleIsFilterByYearChange}
+                     />
+                     <span className='text-sm me-2'>School Year:</span>
+                  </div>
+                  <div>
+                     <DatePicker
+                        className='form-control datepicker'
+                        disabled={!isFilterByYear}
+                        selected={schoolYearStart}
+                        onChange={date => setSchoolYearStart(date)}
+                        showYearPicker
+                        dateFormat='yyyy'
+                     />
+                  </div>
+                  <div className='mx-1'>-</div>
+                  <div>
+                     <input
+                        type='text'
+                        name='end-year'
+                        id='year'
+                        className='form-control me-2 datepicker'
+                        disabled
+                        value={schoolYearStart ? schoolYearStart.getFullYear() + 1 : ''}
+                     />
+                  </div>
+               </div>
+               <button className='btn btn-primary btn-sm' onClick={filter} disabled={isLoading}>
+                  <MdFilterAlt className='icon-small me-1' /> Filter
+               </button>
+            </div>
          </div>
+
+         <DataTableBase
+            columns={columns}
+            data={conversations}
+            responsive
+            highlightOnHover
+            fixedHeader
+            persistTableHead
+            fixedHeaderScrollHeight='65vh'
+            progressPending={isLoading}
+            progressComponent={<Loading />}
+            pagination
+            paginationServer
+            paginationTotalRows={totalRows}
+            onChangeRowsPerPage={handleRowsPerPageChange}
+            onChangePage={handlePageChange}
+            paginationComponentOptions={{ rowsPerPageText: 'Item per page:', selectAllRowsItem: true, selectAllRowsItemText: 'All' }}
+            paginationResetDefaultPage={resetPaginationToggle}
+            sortServer
+            onSort={handleSort}
+         />
       </div>
    );
 };
