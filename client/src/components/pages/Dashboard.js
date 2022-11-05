@@ -12,6 +12,8 @@ import '../../styles/charts.css';
 
 const Dashboard = () => {
    const isMounted = useRef(false);
+   const initialRender = useRef(false);
+
    const [conversations, setConversations] = useState([]);
    const [conversationsPerStrand, setConversationsPerStrand] = useState([]);
    const [strandOptions, setStrandOptions] = useState([]);
@@ -336,7 +338,6 @@ const Dashboard = () => {
    useEffect(() => {
       isMounted.current = true;
       fetchDistinctStrand();
-      fetchConversationsByStrand('all');
 
       return () => {
          isMounted.current = false;
@@ -345,12 +346,15 @@ const Dashboard = () => {
 
    useEffect(() => {
       isMounted.current = true;
-      fetchAllConversations();
+      if (initialRender.current) {
+         fetchConversationsByStrand('all');
+         fetchAllConversations();
+      } else initialRender.current = true;
 
       return () => {
          isMounted.current = false;
       };
-   }, []);
+   }, [strandOptions]);
 
    useEffect(() => {
       // adding count to riasec areas only if it is equal to highest score
