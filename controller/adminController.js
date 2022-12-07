@@ -201,7 +201,10 @@ const admin_getConversations_get = async (req, res) => {
 
       order !== 'desc' ? (sortObj[sort] = 1) : (sortObj[sort] = -1); // 1 -asceding, -1 descending, Example sortObj value: {createdAt: 1} value to sort createdAt to asc
       if (strand && strand !== 'all') filterstrandObj.strand = strand;
-      if (year) filterDateObj['createdAtBreakdown.year'] = { $in: [parseInt(year), parseInt(year) + 1] };
+      if (year) {
+         // filterDateObj['createdAtBreakdown.year'] = { $in: [parseInt(year), parseInt(year) + 1] };
+         filterDateObj['createdAt'] = { $gte: new Date(`${parseInt(year)}-06-01`), $lt: new Date(`${parseInt(year) + 1}-05-01`) }; // get data between June and april
+      }
 
       const conversationsAggregation = [
          {
