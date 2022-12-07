@@ -1,5 +1,6 @@
 .navbar {
-   padding: 10px 0 !important;
+   padding: 8px 0 0 0 !important;
+   min-height: 15vh !important;
    z-index: 500 !important;
 }
 .navbar-nav {
@@ -40,7 +41,9 @@
 }
 
 .section-first {
-   margin-top: 120px;
+   /* margin-top: 120px; */
+   margin-top: 15vh !important;
+   min-height: 85vh !important;
 }
 
 /* admin sidebar */
@@ -88,6 +91,25 @@
    overflow-y: auto !important;
 }
 
+.footer-links {
+   padding: 0 !important;
+   margin: 0 !important;
+}
+.footer-links li {
+   list-style-type: none !important;
+}
+.footer-links li a {
+   text-decoration: none !important;
+}
+.footer-links li a:hover {
+   color: var(--white);
+   text-decoration: underline !important;
+}
+
+.footer-links li small {
+   color: var(--white) !important;
+}
+
 /* media quiries */
 @media (max-width: 992px) {
    .section h1 {
@@ -101,6 +123,11 @@
 
    .nav-link {
       text-align: center !important;
+   }
+
+   .anna-img {
+      min-width: 200px;
+      width: 230px;
    }
 }
 
@@ -120,5 +147,22 @@
 
    .page-not-found h1 {
       font-size: 5rem !important;
+   }
+}
+
+@media (max-height: 500px), (max-width: 498px), (max-width: 992px) and (min-height: 500px) {
+   .navbar {
+      padding: 8px 0 0 0 !important;
+      min-height: initial !important;
+      z-index: 500 !important;
+   }
+
+   .section-first {
+      margin-top: 120px !important;
+      min-height: initial !important;
+   }
+
+   #about {
+      margin-top: 20px !important;
    }
 }

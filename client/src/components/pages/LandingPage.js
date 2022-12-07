@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 
 import Header from '../Header';
 import anna from '../../assets/Anna_1.svg';
+import anna2 from '../../assets/Anna_2.svg';
 import brainstrom from '../../assets/brainstorm.svg';
 import reymond from '../../assets/Reymond.svg';
 import ryan from '../../assets/Ryan.svg';
@@ -62,7 +63,7 @@ const LandingPage = () => {
          <Header navlinks={navlinks} />
          <section
             id='home'
-            className='section section-first bg-white container d-flex flex-column flex-lg-row align-items-center justify-content-between mb-4 px-0'
+            className='section section-first bg-white container d-flex flex-column flex-lg-row align-items-center justify-content-between my-0 px-0'
          >
             <div className='d-flex flex-column align-items-center align-items-lg-start px-4 order-1 order-lg-0' style={{ width: '65%' }}>
                <div>
@@ -70,8 +71,8 @@ const LandingPage = () => {
                   <h1 className='d-inline-block text-primary custom-heading ms-1'>Anna</h1>
                </div>
                <p className='mb-3'>
-                  Anna aid senior high school students awareness and recommend various degree programs for college. Are you ready to know what is the
-                  recommended degree programs for you?
+                  Anna is a web-based chatbot application that aims to aid senior high school students who will be transitioning to higher education
+                  with their career planning by providing them with initial steps to identify their suitable degree programs.
                </p>
                <button className='btn btn-primary btn-lg rounded-pill mb-5 mb-lg-0' onClick={() => setShowbot(true)}>
                   Get Started
@@ -82,7 +83,7 @@ const LandingPage = () => {
             </div>
          </section>
 
-         <section id='about' className='section mt-5 bg-primary py-5'>
+         <section id='about' className='section mt-5 mt-md-0 bg-primary py-5'>
             <div className='container px-0 d-flex flex-column flex-md-row align-items-center justify-content-center flex-wrap'>
                <div className='d-flex flex-column align-items-center feature p-3'>
                   <MdRecommend className='icon-large mb-3' />
@@ -107,10 +108,10 @@ const LandingPage = () => {
                <div className='px-3'>
                   <h2 className='h4 custom-heading'>Anna</h2>
                   <p>
-                     This is Anna, a degree program recommender chatbot. Anna helps you, a senior high school student who is looking for
-                     recommendations on what degree programs to take on college by getting your interest and your senior high school strand and
-                     sharing you information about existing degree programs out there. Anna will help you with your queries and feel free to ask Anna
-                     for recommendation, she will be very pleased to meeting you.
+                     This is Anna, a web-based chatbot and degree program recommender chatbot. Anna helps you, a senior high school student who is
+                     looking for recommendations on what degree programs to take on college by getting your interest and your senior high school
+                     strand and sharing you information about existing degree programs out there. Anna will help you with your queries and feel free
+                     to ask Anna for recommendation, she will be very pleased to meeting you.
                   </p>
                </div>
                <div className='px-3'>
@@ -265,7 +266,70 @@ const LandingPage = () => {
          </section>
          <Chatbot />
 
-         <footer className='mt-auto bg-primary p-2 text-center'>ANNA | Copyright © 2022</footer>
+         <footer className='mt-auto bg-primary'>
+            <div className='p-5 pb-0 text-center'>
+               <div className='row flex-wrap justify-content-center justify-content-md-start'>
+                  <div className='col-11 col-md-5 d-flex flex-column'>
+                     <a className='text-decoration-none' href='/'>
+                        <div className='d-flex align-items-center mb-4'>
+                           <img className='anna-logo' src={anna2} alt='anna-logo' />
+                           <h1 className='h1 ms-3 custom-heading text-white'>Anna</h1>
+                        </div>
+                     </a>
+                     <small className='text-start'>
+                        Anna is a web-based chatbot application that aims to aid senior high school students who will be transitioning to higher
+                        education with their career planning by providing them with initial steps to identify their suitable degree programs.
+                     </small>
+                  </div>
+                  <div className='col-11 col-md-2 d-flex flex-column mt-3 mt-md-0'>
+                     <h4 className='h5 custom-heading mb-4 text-start'>Useful links</h4>
+                     <ul className='footer-links text-start'>
+                        <li>
+                           <a href='/#home'>
+                              <small>Home</small>
+                           </a>
+                        </li>
+                        <li>
+                           <a href='/#about'>
+                              <small>About</small>
+                           </a>
+                        </li>
+                        <li>
+                           <a href='/#team'>
+                              <small>The Team</small>
+                           </a>
+                        </li>
+                        <li>
+                           <a href='/#terms-conditions'>
+                              <small>Terms & Conditions</small>
+                           </a>
+                        </li>
+                        <li>
+                           <a href='/#feedback'>
+                              <small>Feedback</small>
+                           </a>
+                        </li>
+                        <li>
+                           <a href='/admin/login'>
+                              <small>Admin</small>
+                           </a>
+                        </li>
+                     </ul>
+                  </div>
+                  <div className='col-11 col-md-2 d-flex flex-column mt-3 mt-md-0'>
+                     <h4 className='h5 custom-heading mb-4 text-start'>Address</h4>
+                     <small className='text-start'>
+                        University of the Immaculate Conception Father Selga St., Davao City, Davao del Sur Philippines 8000
+                     </small>
+                  </div>
+                  <div className='col-11 col-md-2 d-flex flex-column mt-3 mt-md-0'>
+                     <h4 className='h5 custom-heading mb-4 text-start'>Contact Us</h4>
+                     <small className='text-start'>anna.capstone24@gmail.com</small>
+                  </div>
+               </div>
+            </div>
+            <small className='w-100 d-block mt-5 p-2 text-center bg-primary-dark'>ANNA | Copyright © 2022</small>
+         </footer>
       </>
    );
 };
