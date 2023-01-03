@@ -19,8 +19,8 @@ const RecommendedCoursesMessage = ({
    const [studentStrand] = useState(strand);
    const introductoryText = {
       riasec:
-         'With your interest identified, I will show you degree programs that will be suitable for you to take in college. Allow me to show you these courses:',
-      strand: `Based on your SHS strand which is ${studentStrand}, these are the following courses I could recommend you:`,
+         'With your interest identified, I will show you degree programs that will be suitable for you to take in college. Allow me to show you these degree programs:',
+      strand: `Based on your SHS strand which is ${studentStrand}, these are the following degree programs I could recommend you:`,
    };
 
    useEffect(() => {

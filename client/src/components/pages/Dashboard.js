@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useEffect, useRef } from 'react';
-import { MdFilterAlt } from 'react-icons/md';
+import { MdFilterAlt, MdDownload } from 'react-icons/md';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import randomColor from 'randomcolor';
@@ -57,6 +57,16 @@ const Dashboard = () => {
 
    const [schoolYearStart, setSchoolYearStart] = useState(null);
    const [isFilterBySchoolYear, setIsFilterBySchoolYear] = useState(false);
+
+   const studentByHighestRiasecChartRef = useRef(null);
+   const studentBySexChartRef = useRef(null);
+   const studentByStrandChartRef = useRef(null);
+
+   const [chartsInfo, setChartsInfo] = useState({
+      studentByHighestRiasecChart: { filename: 'Number of Students by Strongest RIASEC Area - Overall' },
+      studentBySexChart: { filename: 'Number of Students by Sex - Overall' },
+      studentByStrandChart: { filename: 'Number of Students by Strand' },
+   });
 
    const fetchAllConversations = async () => {
       // convert array distict strand to object assign value to 0(zero), lowercase its property name, remove space and charater that is not letter
@@ -325,6 +335,20 @@ const Dashboard = () => {
 
       if (strand === 'all') setIsOverAll(true);
       else setIsOverAll(false);
+
+      setChartsInfo(prev => ({
+         ...prev,
+         studentByHighestRiasecChart: {
+            filename: `Number of Students by Strongest RIASEC Area${
+               schoolYearStart ? `_SY ${schoolYearStart.getFullYear()} - ${schoolYearStart.getFullYear() + 1}` : ''
+            }${strand === 'all' ? ' - Overall' : ` - ${strand.replace('%26', '&')}`}.png`,
+         },
+         studentBySexChart: {
+            filename: `Number of Students by Sex${
+               schoolYearStart ? `_SY ${schoolYearStart.getFullYear()} - ${schoolYearStart.getFullYear() + 1}` : ''
+            }${strand === 'all' ? ' - Overall' : ` - ${strand.replace('%26', '&')}`}.png`,
+         },
+      }));
    };
 
    const handleIsFilterByYearChange = e => {
@@ -332,6 +356,25 @@ const Dashboard = () => {
       else {
          setIsFilterBySchoolYear(e.target.checked);
          setSchoolYearStart(null);
+      }
+   };
+
+   const download = () => {
+      const studentByHighestRiasecChartLink = document.createElement('a');
+      studentByHighestRiasecChartLink.download = chartsInfo.studentByHighestRiasecChart.filename;
+      studentByHighestRiasecChartLink.href = studentByHighestRiasecChartRef.current.toBase64Image();
+      studentByHighestRiasecChartLink.click();
+
+      const studentBySexChartLink = document.createElement('a');
+      studentBySexChartLink.download = chartsInfo.studentBySexChart.filename;
+      studentBySexChartLink.href = studentBySexChartRef.current.toBase64Image();
+      studentBySexChartLink.click();
+
+      if (!isOverAll) {
+         const studentByStrandChartLink = document.createElement('a');
+         studentByStrandChartLink.download = chartsInfo.studentByStrandChart.filename;
+         studentByStrandChartLink.href = studentByStrandChartRef.current.toBase64Image();
+         studentByStrandChartLink.click();
       }
    };
 
@@ -520,19 +563,27 @@ const Dashboard = () => {
             <button className='btn btn-primary btn-sm me-3 mb-3' onClick={filter} disabled={isLoading}>
                <MdFilterAlt className='icon-small me-1' /> Filter
             </button>
+
+            <button className='btn btn-primary btn-sm me-3 mb-3' onClick={download} disabled={isLoading}>
+               <MdDownload className='icon-small me-1' /> Download
+            </button>
          </div>
          <div className='w-100 d-flex flex-wrap justify-content-center align-items-center'>
             {!isLoading ? (
                <>
                   <div className='chart-container'>
-                     <BarChart data={studentByHighestRiasecData} options={getOptions('Number of Students by Highest/Strongest RIASEC Area')} />
+                     <BarChart
+                        ref={studentByHighestRiasecChartRef}
+                        data={studentByHighestRiasecData}
+                        options={getOptions('Number of Students by Highest/Strongest RIASEC Area')}
+                     />
                   </div>
                   <div className='chart-container'>
-                     <BarChart data={studentBySexData} options={getOptions('Number of Students by Sex')} />
+                     <BarChart ref={studentBySexChartRef} data={studentBySexData} options={getOptions('Number of Students by Sex')} />
                   </div>
                   {!isOverAll && (
                      <div className='chart-container'>
-                        <BarChart data={studentByStrandData} options={getOptions('Number of Students by Strand')} />
+                        <BarChart ref={studentByStrandChartRef} data={studentByStrandData} options={getOptions('Number of Students by Strand')} />
                      </div>
                   )}
                </>

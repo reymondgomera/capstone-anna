@@ -123,10 +123,14 @@
 }
 .message-text-link {
    font-size: inherit;
+   color: var(--primary) !important;
 }
 .message-text-link:active,
 .message-text-link:focus {
    box-shadow: none !important;
+}
+.message-text-link:hover {
+   color: var(--primary-dark) !important;
 }
 
 /* recommended courses list */

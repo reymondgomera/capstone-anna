@@ -2,6 +2,7 @@ import '../../styles/chatbot.css';
 import chatbotAvatar from '../../assets/Anna_Chat_Avatar.svg';
 import { useContext, useEffect } from 'react';
 import { ChatbotContext } from '../../context/ChatbotContext';
+import ReactHtmlParse from 'html-react-parser';
 
 const Message = ({ keyword, speaks, text }) => {
    const { inputRef } = useContext(ChatbotContext);
@@ -19,7 +20,7 @@ const Message = ({ keyword, speaks, text }) => {
                </div>
             )}
             <div className={`message-text ${speaks === 'bot' ? 'bot' : 'user'}`}>
-               {text}{' '}
+               {ReactHtmlParse(text.toString())}{' '}
                {keyword === 'terms-conditions' && (
                   <>
                      <button

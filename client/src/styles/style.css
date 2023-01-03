@@ -46,6 +46,15 @@
    min-height: 85vh !important;
 }
 
+.section:not(.section-first) {
+   padding-top: 4.5rem !important;
+   padding-bottom: 4.5rem !important;
+}
+
+#team {
+   padding-top: 0 !important;
+}
+
 /* admin sidebar */
 .sidebar {
    height: 100vh;

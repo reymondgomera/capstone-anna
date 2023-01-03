@@ -19,6 +19,7 @@ const LandingPage = () => {
    const navlinks = [
       { text: 'Home', link: '/#home' },
       { text: 'About', link: '/#about' },
+      { text: 'Learn RIASEC', link: '/#learn-riasec' },
       { text: 'The Team', link: '/#team' },
       { text: 'Terms & Conditions', link: '/#terms-conditions' },
       { text: 'Feedback', link: '/#feedback' },
@@ -83,12 +84,12 @@ const LandingPage = () => {
             </div>
          </section>
 
-         <section id='about' className='section mt-5 mt-md-0 bg-primary py-5'>
+         <section id='about' className='section mt-5 mt-md-0 bg-primary'>
             <div className='container px-0 d-flex flex-column flex-md-row align-items-center justify-content-center flex-wrap'>
                <div className='d-flex flex-column align-items-center feature p-3'>
                   <MdRecommend className='icon-large mb-3' />
                   <h2 className='h4 m-0 custom-heading text-center'>RIASEC &amp; Strand</h2>
-                  <p className='text-center'>Recommend courses based on RIASEC result and based on strand.</p>
+                  <p className='text-center'>Recommend degree programs based on RIASEC result and based on strand.</p>
                </div>
 
                <div className='d-flex flex-column  align-items-center feature p-3'>
@@ -105,8 +106,8 @@ const LandingPage = () => {
             </div>
             <div className='container d-flex flex-column px-0'>
                <h1 className='custom-heading my-5 text-center'>ABOUT</h1>
-               <div className='px-3'>
-                  <h2 className='h4 custom-heading'>Anna</h2>
+               <div className='px-3 mb-3'>
+                  <h2 className='h4 custom-heading mb-4'>Anna</h2>
                   <p>
                      This is Anna, a web-based chatbot and degree program recommender chatbot. Anna helps you, a senior high school student who is
                      looking for recommendations on what degree programs to take on college by getting your interest and your senior high school
@@ -115,15 +116,92 @@ const LandingPage = () => {
                   </p>
                </div>
                <div className='px-3'>
-                  <h2 className='h4 custom-heading'>Research Study &amp; Problem</h2>
-                  <p>
-                     Shifting and dropout is one of the prevalent problems faced by college students especially to those who are within the generation
-                     Z.
-                  </p>
+                  <h2 className='h4 custom-heading mb-4'>Research Study &amp; Problem</h2>
+                  <div>
+                     <h3 className='h6 custom-heading'>TITLE OF STUDY:</h3>
+                     <p>ANNA: A Web-based Chatbot for Career Planning following Cooperative Principle</p>
+                  </div>
+                  <div>
+                     <h3 className='h6 custom-heading'>FOCUS:</h3>
+                     <p>
+                        The study will be focusing on one area of career guidance, which is career planning. The term "Career planning" is a process
+                        in career guidance. It is the starting point for individuals to plan or foresee their career.
+                     </p>
+                     <p>
+                        It is essential for an individual to undergo career planning because carefully planning what career to take avoids the failure
+                        of achieving the career course. Also, it increases the student's confidence on what course they are trying to pursue.
+                     </p>
+                  </div>
+                  <div>
+                     <h3 className='h6 custom-heading'>PROBLEM:</h3>
+                     <p>
+                        Shifting and dropout is one of the prevalent problems faced by college students especially to those who are within the
+                        generation Z. One of the reasons why students shift and dropout in college is the poor choice of degree programs. They tend to
+                        copy the decisions of others and do not have sufficient career information.
+                     </p>
+                     <p>
+                        There were technological and non-technological solutions proposed, but the researchers found gaps. To fill in those identified
+                        gaps, the researchers developed Anna.
+                     </p>
+                     <div>
+                        <h3 className='h6 custom-heading'>OBJECTIVES:</h3>
+                        <p>
+                           The general objective of this study is to develop ANNA, a chatbot for career planning that would aid senior high school
+                           students by providing them with awareness of different degree program options and degree program selection. The specific
+                           objectives of the study are as follows:
+                        </p>
+                        <ul className='m-0 ps-4'>
+                           <li>Create a conversational scheme whose main goal is to provide a degree program recommendation to students</li>
+                           <li>Develop a chatbot that can provide degree program recommendations to senior high school students</li>
+                           <li>Test the application in terms of its acceptability and usability among its targeted users and deploy Anna.</li>
+                        </ul>
+                     </div>
+                  </div>
                </div>
             </div>
          </section>
-         <section id='team' className='section bg-white py-5'>
+
+         <section id='learn-riasec' className='section bg-white'>
+            <div className='container d-flex flex-column px-0'>
+               <h1 className='custom-heading text-primary mb-5 text-center'>LEARN RIASEC</h1>
+               <div className='container bg-grey rounded p-5'>
+                  <div className='d-flex flex-column flex-lg-row align-items-center align-items-lg-start justify-content-between'>
+                     <div>
+                        <iframe
+                           id='playlist'
+                           loading='lazy'
+                           src='https://www.youtube.com/embed/fyR6yJifLHI?loop=1&playlist=fyR6yJifLHI'
+                           width='480'
+                           height='270'
+                           title='RIASEC - Personality Type'
+                           frameBorder='0'
+                           allowFullScreen
+                        ></iframe>
+                        <div className='text-center bg-primary rounded p-2 mt-1'>
+                           Video by <strong>Career Library</strong> on{' '}
+                           <a className='text-decoration-none' href='https://www.youtube.com' target='_blank' rel='noreferrer'>
+                              YouTube
+                           </a>
+                        </div>
+                     </div>
+
+                     <div className='d-flex flex-column align-items-center align-items-lg-start mt-5 mt-lg-0 ms-lg-5'>
+                        <h1 className='custom-heading text-primary'>What is RIASEC test?</h1>
+                        <p>
+                           The RIASEC test was based on Holland’s theory, in which he proposed that careers can be classified into six areas:
+                           Realistic, Investigative, Artistic, Social, Enterprising and Conventional. Thus, these six areas can be used to describe a
+                           person's personality, ability, skills, and interests. Also, it is a standardized test that was designed to help students
+                           discover the most suitable career for them and has been administered by several universities inside or outside the
+                           Philippines and these universities believed that the RIASEC test really serves its purpose of helping students.
+                        </p>
+                        <p>Watch the video to learn more about the components of RIASEC.</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         <section id='team' className='section bg-white'>
             <div className='container d-flex flex-column px-0'>
                <h1 className='custom-heading text-primary mb-5 text-center'>THE TEAM</h1>
                <div className='d-flex flex-column flex-md-row justify-content-center align-items-center'>
@@ -149,7 +227,7 @@ const LandingPage = () => {
             </div>
          </section>
 
-         <section id='terms-conditions' className='section bg-primary py-5'>
+         <section id='terms-conditions' className='section bg-primary'>
             <div className='container d-flex flex-column px-3  '>
                <h1 className='custom-heading mb-5 text-center'>TERMS AND CONDITIONS</h1>
                <div className='bg-grey rounded p-3 mb-3'>
@@ -228,7 +306,7 @@ const LandingPage = () => {
             </div>
          </section>
 
-         <section id='feedback' className='section bg-white py-5'>
+         <section id='feedback' className='section bg-white'>
             <div className='container d-flex flex-column px-0 '>
                <h1 className='custom-heading mb-5 text-center text-primary'>FEEDBACK</h1>
                <form className='d-flex flex-column justify-content-center align-items-center px-4' noValidate onSubmit={handleSubmit}>
