@@ -247,6 +247,9 @@ module.exports = app => {
 
                agent.add(riasecAreasIdentify);
                agent.add(riasecAreasDescription);
+               agent.add(
+                  `If you want to know more about the components of RIASEC, please navigate <a className='message-text-link' href="/#learn-riasec">here</a>.`
+               );
                agent.add(new Payload(agent.UNSPECIFIED, payload, { rawPayload: true, sendAsMessage: true })); // passed custom payload
             } catch (err) {
                console.error(err.message);
