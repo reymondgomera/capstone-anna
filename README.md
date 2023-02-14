@@ -43,6 +43,11 @@ Problem:
 
 > There were technological and non-technological solutions proposed, but the researchers found gaps. To fill in those identified gaps, the researchers developed Anna.
 
+Type of users:
+
+-  **Admin / Student Development Facilitators**
+-  **Student / Regular User**
+
 Features:
 
 -  **Anna Chatbot** - A chatbot that can coverse using English language. Provides degree programs awaireness using video materials and recommend degree programs based on student's RIASEC results and strand. Also, allows users/students to learn more about the recommended degree programs.
@@ -50,5 +55,10 @@ Features:
 -  **Admin Dashboard** - Allow admin to view & download the accumulated data from the conversation of Anna and user (e.g. # of student by highest/strongest RIASEC area, # of student by sex and # of student by strand). Data are displayed through graphs and can also be filtered out.
 -  **Admin Feedback** - Allow admin to view and search for user feedbacks.
 -  **Admin Conversation** - Allow admin to view in details the gathered data of students while having conversation with Anna. Data includes: student's name, age, sex, strand, RIASEC code with scores and recommendation of Anna based on RIASEC and strand. Data can also be filtered out.
+
+Sample Account:
+
+-  Admin
+   -  **Email**: admin@gmail.com, **Password**: adminpass
 
 ##### &nbsp;&nbsp;&nbsp;Github Repository: https://github.com/reymondgomera/capstone-anna
