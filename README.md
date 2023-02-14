@@ -11,14 +11,13 @@ Live Preview Link:
 -  User - https://anna-gsh7.onrender.com
 -  Admin - https://anna-gsh7.onrender.com/admin
 
-<br/> Screenshots:
+Screenshots:
 
 <img src="https://i.ibb.co/PGpvv5x/image.png" alt="image-1" border="0">
 <img src="https://i.ibb.co/tDVHHhC/image.png" alt="image-2" border="0">
 <img src="https://i.ibb.co/Ky722vD/image.png" alt="image-3" border="0">
 <img src="https://i.ibb.co/X79Zvt0/image.png" alt="image-4" border="0">
 
-<br/>
 Technology Use:
 
 -  **AJAX Calls** - Fetch API
@@ -30,26 +29,19 @@ Technology Use:
 -  **Database** - MongoDB
 -  **Hosting Platform** - Render
 
-<br/>
 About:
 
 > Anna is a web-based chatbot application that aims to aid senior high school students who will be transitioning to higher education with their career planning by providing them with initial steps to identify their suitable degree programs. Anna will be conversing using the English language and can provide awareness of the various degree programs that exist today and give degree program recommendations to students based on the result of their RIASEC test and their strands. Anna could also work as an assistive tool in the guidance department to cater to a large number of students at a time.
 
-<br/>
-
 Focus:
 
 > The capstone was focusing on one area of career guidance, which is career planning. The term "Career planning" is a process in career guidance. It is the starting point for individuals to plan or foresee their career.
-
-<br/>
 
 Problem:
 
 > Shifting and dropout is one of the prevalent problems faced by college students especially to those who are within the generation Z. One of the reasons why students shift and dropout in college is the poor choice of degree programs. They tend to copy the decisions of others and do not have sufficient career information.
 
 > There were technological and non-technological solutions proposed, but the researchers found gaps. To fill in those identified gaps, the researchers developed Anna.
-
-<br/>
 
 Features:
 
